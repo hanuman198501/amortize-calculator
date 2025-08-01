@@ -4,7 +4,25 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Calculator, Plus, Trash2 } from 'lucide-react';
+import { Calculator, Plus, Trash2, GripVertical } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface AmortizationRow {
   month: number;
@@ -25,26 +43,88 @@ interface InterestRate {
 }
 
 interface ExtraPayment {
+  id: string;
   month: string;
   amount: number;
 }
 
+// Sortable Extra Payment Item Component
+const SortableExtraPaymentItem = ({ payment, index, onUpdate, onRemove }: {
+  payment: ExtraPayment;
+  index: number;
+  onUpdate: (index: number, field: 'month' | 'amount', value: string | number) => void;
+  onRemove: (index: number) => void;
+}) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: payment.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="flex gap-2 items-center bg-card p-2 rounded border">
+      <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
+        <GripVertical className="w-4 h-4 text-muted-foreground" />
+      </div>
+      <Input
+        type="month"
+        value={payment.month}
+        onChange={(e) => onUpdate(index, 'month', e.target.value)}
+        className="flex-1"
+        placeholder="Select month"
+      />
+      <div className="flex items-center gap-1">
+        <span className="text-sm text-muted-foreground">₹</span>
+        <Input
+          type="number"
+          value={payment.amount === 0 ? '' : payment.amount}
+          onChange={(e) => {
+            const value = e.target.value === '' ? 0 : Math.max(0, Number(e.target.value));
+            onUpdate(index, 'amount', value);
+          }}
+          className="w-24"
+          placeholder="0"
+          min="0"
+        />
+      </div>
+      <Button
+        onClick={() => onRemove(index)}
+        size="sm"
+        variant="outline"
+        className="px-2"
+      >
+        <Trash2 className="w-4 h-4" />
+      </Button>
+    </div>
+  );
+};
+
 const LoanCalculator = () => {
   const { toast } = useToast();
-  const [loanAmount, setLoanAmount] = useState(600000);
-  const [monthlyEmi, setMonthlyEmi] = useState(8350);
-  const [startDate, setStartDate] = useState('2025-08-01');
-  const [defaultExtra, setDefaultExtra] = useState(8350);
+  const [loanAmount, setLoanAmount] = useState<string>('');
+  const [monthlyEmi, setMonthlyEmi] = useState<string>('');
+  const [startDate, setStartDate] = useState<string>('');
+  const [defaultExtra, setDefaultExtra] = useState<string>('');
   const [interestRates, setInterestRates] = useState<InterestRate[]>([
-    { date: '2025-08-01', rate: 10 }
+    { date: '', rate: 0 }
   ]);
-  const [extraPayments, setExtraPayments] = useState<ExtraPayment[]>([
-    { month: '2025-08', amount: 0 },
-    { month: '2025-09', amount: 108350 },
-    { month: '2025-11', amount: 108350 }
-  ]);
+  const [extraPayments, setExtraPayments] = useState<ExtraPayment[]>([]);
   const [schedule, setSchedule] = useState<AmortizationRow[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const addInterestRate = () => {
     setInterestRates([...interestRates, { date: '', rate: 0 }]);
@@ -63,7 +143,8 @@ const LoanCalculator = () => {
   };
 
   const addExtraPayment = () => {
-    setExtraPayments([...extraPayments, { month: '', amount: 0 }]);
+    const newId = `extra-${Date.now()}-${Math.random()}`;
+    setExtraPayments([...extraPayments, { id: newId, month: '', amount: 0 }]);
   };
 
   const removeExtraPayment = (index: number) => {
@@ -74,6 +155,19 @@ const LoanCalculator = () => {
     const updated = [...extraPayments];
     updated[index] = { ...updated[index], [field]: value };
     setExtraPayments(updated);
+  };
+
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      setExtraPayments((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
   };
 
   const getInterestRate = (currentDate: Date, interestSchedule: InterestRate[]): number => {
@@ -90,11 +184,33 @@ const LoanCalculator = () => {
   };
 
   const calculateAmortization = () => {
+    if (!loanAmount || !monthlyEmi || !startDate) {
+      toast({
+        title: "Input Required",
+        description: "Please fill in loan amount, monthly EMI, and start date",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const loanAmountNum = parseFloat(loanAmount);
+    const monthlyEmiNum = parseFloat(monthlyEmi);
+    const defaultExtraNum = parseFloat(defaultExtra) || 0;
+
+    if (loanAmountNum <= 0 || monthlyEmiNum <= 0) {
+      toast({
+        title: "Invalid Input",
+        description: "Please enter valid positive values for loan amount and EMI",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsCalculating(true);
     
     try {
       const schedule: AmortizationRow[] = [];
-      let outstanding = loanAmount;
+      let outstanding = loanAmountNum;
       let currentDate = new Date(startDate);
       
       // Convert extra payments to a map
@@ -111,11 +227,11 @@ const LoanCalculator = () => {
         const monthlyRate = currentRate / 12;
         
         const interest = outstanding * monthlyRate;
-        let principalPayment = monthlyEmi - interest;
+        let principalPayment = monthlyEmiNum - interest;
         
         // Get extra payment for the current month
         const monthKey = currentDate.toISOString().slice(0, 7); // YYYY-MM format
-        const extraPayment = extraPaymentMap[monthKey] || defaultExtra;
+        const extraPayment = extraPaymentMap[monthKey] !== undefined ? extraPaymentMap[monthKey] : defaultExtraNum;
         let totalPrincipalPayment = principalPayment + extraPayment;
         
         // Handle overpayment correctly
@@ -131,7 +247,7 @@ const LoanCalculator = () => {
           endBalance = 0;
           finalPrincipalPaid = totalPrincipalPayment;
         } else {
-          totalPayment = monthlyEmi + extraPayment;
+          totalPayment = monthlyEmiNum + extraPayment;
           endBalance = outstanding - totalPrincipalPayment;
           finalPrincipalPaid = totalPrincipalPayment;
         }
@@ -141,7 +257,7 @@ const LoanCalculator = () => {
           date: currentDate.toISOString().slice(0, 10),
           interestRate: Math.round(currentRate * 10000) / 100,
           startPrincipal: Math.round(outstanding * 100) / 100,
-          emiPaid: monthlyEmi,
+          emiPaid: monthlyEmiNum,
           extraPaid: extraPayment,
           totalPaid: Math.round(totalPayment * 100) / 100,
           interestPaid: Math.round(interest * 100) / 100,
@@ -210,8 +326,10 @@ const LoanCalculator = () => {
                     id="loanAmount"
                     type="number"
                     value={loanAmount}
-                    onChange={(e) => setLoanAmount(Number(e.target.value))}
+                    onChange={(e) => setLoanAmount(e.target.value)}
                     className="mt-1"
+                    placeholder="Enter loan amount"
+                    min="0"
                   />
                 </div>
                 <div>
@@ -220,8 +338,10 @@ const LoanCalculator = () => {
                     id="monthlyEmi"
                     type="number"
                     value={monthlyEmi}
-                    onChange={(e) => setMonthlyEmi(Number(e.target.value))}
+                    onChange={(e) => setMonthlyEmi(e.target.value)}
                     className="mt-1"
+                    placeholder="Enter monthly EMI"
+                    min="0"
                   />
                 </div>
                 <div>
@@ -240,8 +360,10 @@ const LoanCalculator = () => {
                     id="defaultExtra"
                     type="number"
                     value={defaultExtra}
-                    onChange={(e) => setDefaultExtra(Number(e.target.value))}
+                    onChange={(e) => setDefaultExtra(e.target.value)}
                     className="mt-1"
+                    placeholder="Enter default extra payment"
+                    min="0"
                   />
                 </div>
               </div>
@@ -273,9 +395,14 @@ const LoanCalculator = () => {
                         <Input
                           type="number"
                           step="0.01"
-                          value={rate.rate}
-                          onChange={(e) => updateInterestRate(index, 'rate', Number(e.target.value))}
+                          value={rate.rate === 0 ? '' : rate.rate}
+                          onChange={(e) => {
+                            const value = e.target.value === '' ? 0 : Math.max(0, Number(e.target.value));
+                            updateInterestRate(index, 'rate', value);
+                          }}
                           className="w-20"
+                          placeholder="0"
+                          min="0"
                         />
                         <span className="text-sm text-muted-foreground">%</span>
                       </div>
@@ -309,33 +436,23 @@ const LoanCalculator = () => {
                   </Button>
                 </div>
                 <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {extraPayments.map((payment, index) => (
-                    <div key={index} className="flex gap-2 items-center">
-                      <Input
-                        type="month"
-                        value={payment.month}
-                        onChange={(e) => updateExtraPayment(index, 'month', e.target.value)}
-                        className="flex-1"
-                      />
-                      <div className="flex items-center gap-1">
-                        <span className="text-sm text-muted-foreground">₹</span>
-                        <Input
-                          type="number"
-                          value={payment.amount}
-                          onChange={(e) => updateExtraPayment(index, 'amount', Number(e.target.value))}
-                          className="w-24"
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext items={extraPayments.map(p => p.id)} strategy={verticalListSortingStrategy}>
+                      {extraPayments.map((payment, index) => (
+                        <SortableExtraPaymentItem
+                          key={payment.id}
+                          payment={payment}
+                          index={index}
+                          onUpdate={updateExtraPayment}
+                          onRemove={removeExtraPayment}
                         />
-                      </div>
-                      <Button
-                        onClick={() => removeExtraPayment(index)}
-                        size="sm"
-                        variant="outline"
-                        className="px-2"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
+                      ))}
+                    </SortableContext>
+                  </DndContext>
                 </div>
               </div>
 
@@ -359,7 +476,7 @@ const LoanCalculator = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-4 bg-muted rounded-lg">
                     <div className="text-2xl font-bold text-primary">
-                      ₹{loanAmount.toLocaleString()}
+                      ₹{parseFloat(loanAmount || '0').toLocaleString()}
                     </div>
                     <div className="text-sm text-muted-foreground">Principal Amount</div>
                   </div>
@@ -437,6 +554,13 @@ const LoanCalculator = () => {
             </CardContent>
           </Card>
         )}
+
+        {/* Disclaimer */}
+        <div className="text-center py-6">
+          <p className="text-muted-foreground text-sm">
+            This tool is for educational purposes only. Actual loan details may vary from bank to bank.
+          </p>
+        </div>
       </div>
     </div>
   );
