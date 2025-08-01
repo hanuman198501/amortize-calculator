@@ -106,7 +106,7 @@ const LoanCalculator = () => {
       });
 
       let month = 1;
-      while (outstanding > 0.01 && month <= 1200) { // Safety limit
+      while (outstanding > 0 && month <= 1200) { // Safety limit
         const currentRate = getInterestRate(currentDate, interestRates);
         const monthlyRate = currentRate / 12;
         
@@ -121,16 +121,19 @@ const LoanCalculator = () => {
         // Handle overpayment correctly
         let totalPayment: number;
         let endBalance: number;
+        let finalPrincipalPaid: number;
         
         if (totalPrincipalPayment >= outstanding) {
           totalPrincipalPayment = outstanding;
-          const adjustedExtraPayment = outstanding > extraPayment ? extraPayment : outstanding;
-          principalPayment = outstanding - adjustedExtraPayment;
-          totalPayment = interest + totalPrincipalPayment;
+          const interest_recalc = outstanding * monthlyRate;
+          principalPayment = outstanding - extraPayment > 0 ? outstanding - extraPayment : 0;
+          totalPayment = interest_recalc + totalPrincipalPayment;
           endBalance = 0;
+          finalPrincipalPaid = totalPrincipalPayment;
         } else {
           totalPayment = monthlyEmi + extraPayment;
           endBalance = outstanding - totalPrincipalPayment;
+          finalPrincipalPaid = totalPrincipalPayment;
         }
 
         schedule.push({
@@ -142,16 +145,17 @@ const LoanCalculator = () => {
           extraPaid: extraPayment,
           totalPaid: Math.round(totalPayment * 100) / 100,
           interestPaid: Math.round(interest * 100) / 100,
-          principalPaid: Math.round(principalPayment * 100) / 100,
+          principalPaid: Math.round(finalPrincipalPaid * 100) / 100,
           endPrincipal: Math.round(endBalance * 100) / 100
         });
 
         outstanding = endBalance;
         
-        // Move to next month
+        // Move to next month - use same day of next month
         const year = currentDate.getFullYear();
         const monthNum = currentDate.getMonth();
-        currentDate = new Date(year, monthNum + 1, currentDate.getDate());
+        const day = currentDate.getDate();
+        currentDate = new Date(year, monthNum + 1, day);
         month++;
       }
 
