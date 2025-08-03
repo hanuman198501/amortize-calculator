@@ -225,29 +225,44 @@ const LoanCalculator = () => {
       while (outstanding > 0 && month <= 1200) { // Safety limit
         const currentRate = getInterestRate(currentDate, interestRates);
         const monthlyRate = currentRate / 12;
-        
         const interest = outstanding * monthlyRate;
         let principalPayment = monthlyEmiNum - interest;
+        
+        // In case EMI doesn't cover interest
+        if (principalPayment < 0) {
+          principalPayment = 0;
+        }
         
         // Get extra payment for the current month
         const monthKey = currentDate.toISOString().slice(0, 7); // YYYY-MM format
         const extraPayment = extraPaymentMap[monthKey] !== undefined ? extraPaymentMap[monthKey] : defaultExtraNum;
         let totalPrincipalPayment = principalPayment + extraPayment;
         
-        // Handle overpayment correctly
+        // Handle overpayment in the final month
         let totalPayment: number;
         let endBalance: number;
         let finalPrincipalPaid: number;
+        let usedExtraPayment: number;
         
         if (totalPrincipalPayment >= outstanding) {
-          totalPrincipalPayment = outstanding;
-          const interest_recalc = outstanding * monthlyRate;
-          principalPayment = outstanding - extraPayment > 0 ? outstanding - extraPayment : 0;
-          totalPayment = interest_recalc + totalPrincipalPayment;
+          const interestRecalc = outstanding * monthlyRate;
+          let principalPaymentRecalc = monthlyEmiNum - interestRecalc;
+          if (principalPaymentRecalc < 0) {
+            principalPaymentRecalc = 0;
+          }
+          
+          usedExtraPayment = outstanding - principalPaymentRecalc;
+          if (usedExtraPayment < 0) {
+            usedExtraPayment = 0;
+          }
+          
+          totalPrincipalPayment = principalPaymentRecalc + usedExtraPayment;
+          totalPayment = interestRecalc + totalPrincipalPayment;
           endBalance = 0;
           finalPrincipalPaid = totalPrincipalPayment;
         } else {
-          totalPayment = monthlyEmiNum + extraPayment;
+          usedExtraPayment = extraPayment;
+          totalPayment = monthlyEmiNum + usedExtraPayment;
           endBalance = outstanding - totalPrincipalPayment;
           finalPrincipalPaid = totalPrincipalPayment;
         }
@@ -257,8 +272,8 @@ const LoanCalculator = () => {
           date: currentDate.toISOString().slice(0, 10),
           interestRate: Math.round(currentRate * 10000) / 100,
           startPrincipal: Math.round(outstanding * 100) / 100,
-          emiPaid: monthlyEmiNum,
-          extraPaid: extraPayment,
+          emiPaid: Math.round(monthlyEmiNum * 100) / 100,
+          extraPaid: Math.round(usedExtraPayment * 100) / 100,
           totalPaid: Math.round(totalPayment * 100) / 100,
           interestPaid: Math.round(interest * 100) / 100,
           principalPaid: Math.round(finalPrincipalPaid * 100) / 100,
