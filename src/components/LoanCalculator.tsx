@@ -26,15 +26,15 @@ import { CSS } from '@dnd-kit/utilities';
 
 interface AmortizationRow {
   month: number;
-  date: string;
-  interestRate: number;
-  startPrincipal: number;
-  emiPaid: number;
-  extraPaid: number;
-  totalPaid: number;
+  paymentDate: string;
+  annualInterestRate: number;
+  openingBalance: number;
+  monthlyEmi: number;
+  extraPayment: number;
+  totalPaymentThisMonth: number;
   interestPaid: number;
   principalPaid: number;
-  endPrincipal: number;
+  remainingBalance: number;
 }
 
 interface InterestRate {
@@ -109,7 +109,9 @@ const SortableExtraPaymentItem = ({ payment, index, onUpdate, onRemove }: {
 const LoanCalculator = () => {
   const { toast } = useToast();
   const [loanAmount, setLoanAmount] = useState<string>('');
-  const [monthlyEmi, setMonthlyEmi] = useState<string>('');
+  const [calculationMode, setCalculationMode] = useState<'fixed-emi' | 'tenure'>('fixed-emi');
+  const [fixedEmi, setFixedEmi] = useState<string>('');
+  const [tenureMonths, setTenureMonths] = useState<string>('');
   const [startDate, setStartDate] = useState<string>('');
   const [defaultExtra, setDefaultExtra] = useState<string>('');
   const [interestRates, setInterestRates] = useState<InterestRate[]>([
@@ -173,34 +175,79 @@ const LoanCalculator = () => {
   const getInterestRate = (currentDate: Date, interestSchedule: InterestRate[]): number => {
     const sortedSchedule = interestSchedule
       .filter(item => item.date && item.rate)
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      .map(item => [new Date(item.date), item.rate / 100] as [Date, number])
+      .sort((a, b) => a[0].getTime() - b[0].getTime());
     
     for (let i = sortedSchedule.length - 1; i >= 0; i--) {
-      if (currentDate >= new Date(sortedSchedule[i].date)) {
-        return sortedSchedule[i].rate / 100;
+      if (currentDate >= sortedSchedule[i][0]) {
+        return sortedSchedule[i][1];
       }
     }
-    return sortedSchedule[0]?.rate / 100 || 0.1;
+    return sortedSchedule[0]?.[1] || 0.1;
+  };
+
+  const calculateMonthlyEmi = (principal: number, monthlyRate: number, monthsLeft: number): number => {
+    if (monthlyRate === 0) {
+      return principal / monthsLeft;
+    }
+    return principal * monthlyRate * Math.pow(1 + monthlyRate, monthsLeft) / (Math.pow(1 + monthlyRate, monthsLeft) - 1);
   };
 
   const calculateAmortization = () => {
-    if (!loanAmount || !monthlyEmi || !startDate) {
+    if (!loanAmount || !startDate) {
       toast({
         title: "Input Required",
-        description: "Please fill in loan amount, monthly EMI, and start date",
+        description: "Please fill in loan amount and start date",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (calculationMode === 'fixed-emi' && !fixedEmi) {
+      toast({
+        title: "Input Required",
+        description: "Please enter fixed EMI amount for fixed-emi mode",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (calculationMode === 'tenure' && !tenureMonths) {
+      toast({
+        title: "Input Required",
+        description: "Please enter tenure in months for tenure mode",
         variant: "destructive",
       });
       return;
     }
 
     const loanAmountNum = parseFloat(loanAmount);
-    const monthlyEmiNum = parseFloat(monthlyEmi);
+    const fixedEmiNum = calculationMode === 'fixed-emi' ? parseFloat(fixedEmi) : null;
+    const tenureMonthsNum = calculationMode === 'tenure' ? parseInt(tenureMonths) : null;
     const defaultExtraNum = parseFloat(defaultExtra) || 0;
 
-    if (loanAmountNum <= 0 || monthlyEmiNum <= 0) {
+    if (loanAmountNum <= 0) {
       toast({
         title: "Invalid Input",
-        description: "Please enter valid positive values for loan amount and EMI",
+        description: "Please enter valid positive values for loan amount",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (calculationMode === 'fixed-emi' && (fixedEmiNum === null || fixedEmiNum <= 0)) {
+      toast({
+        title: "Invalid Input",
+        description: "Please enter valid positive EMI amount",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (calculationMode === 'tenure' && (tenureMonthsNum === null || tenureMonthsNum <= 0)) {
+      toast({
+        title: "Invalid Input",
+        description: "Please enter valid tenure in months",
         variant: "destructive",
       });
       return;
@@ -223,70 +270,87 @@ const LoanCalculator = () => {
 
       let month = 1;
       while (outstanding > 0 && month <= 1200) { // Safety limit
-        const currentRate = getInterestRate(currentDate, interestRates);
-        const monthlyRate = currentRate / 12;
-        const interest = outstanding * monthlyRate;
-        let principalPayment = monthlyEmiNum - interest;
-        
-        // In case EMI doesn't cover interest
-        if (principalPayment < 0) {
-          principalPayment = 0;
-        }
-        
-        // Get extra payment for the current month
-        const monthKey = currentDate.toISOString().slice(0, 7); // YYYY-MM format
-        const extraPayment = extraPaymentMap[monthKey] !== undefined ? extraPaymentMap[monthKey] : defaultExtraNum;
-        let totalPrincipalPayment = principalPayment + extraPayment;
-        
-        // Handle overpayment in the final month
-        let totalPayment: number;
-        let endBalance: number;
-        let finalPrincipalPaid: number;
-        let usedExtraPayment: number;
-        
-        if (totalPrincipalPayment >= outstanding) {
-          const interestRecalc = outstanding * monthlyRate;
-          let principalPaymentRecalc = monthlyEmiNum - interestRecalc;
-          if (principalPaymentRecalc < 0) {
-            principalPaymentRecalc = 0;
-          }
-          
-          usedExtraPayment = outstanding - principalPaymentRecalc;
-          if (usedExtraPayment < 0) {
-            usedExtraPayment = 0;
-          }
-          
-          totalPrincipalPayment = principalPaymentRecalc + usedExtraPayment;
-          totalPayment = interestRecalc + totalPrincipalPayment;
-          endBalance = 0;
-          finalPrincipalPaid = totalPrincipalPayment;
+        const rate = getInterestRate(currentDate, interestRates);
+        const mrate = rate / 12;
+
+        // Determine EMI
+        let emi: number;
+        if (tenureMonthsNum !== null) {
+          const monthsLeft = Math.max(tenureMonthsNum - (month - 1), 1);
+          emi = calculateMonthlyEmi(outstanding, mrate, monthsLeft);
         } else {
-          usedExtraPayment = extraPayment;
-          totalPayment = monthlyEmiNum + usedExtraPayment;
-          endBalance = outstanding - totalPrincipalPayment;
-          finalPrincipalPaid = totalPrincipalPayment;
+          if (fixedEmiNum === null) {
+            throw new Error("Fixed EMI is required for payoff mode");
+          }
+          emi = fixedEmiNum;
+        }
+
+        // Interest & principal from EMI
+        const interest = outstanding * mrate;
+        const principalFromEmi = Math.max(emi - interest, 0);
+
+        // Scheduled extra, capped
+        const monthKey = currentDate.toISOString().slice(0, 7); // YYYY-MM format
+        const scheduledExtra = extraPaymentMap[monthKey] !== undefined ? extraPaymentMap[monthKey] : defaultExtraNum;
+        const maxExtra = Math.max(outstanding - principalFromEmi, 0);
+        const extra = Math.min(scheduledExtra, maxExtra);
+
+        // Final payment logic in early payoff
+        let emiPaid: number;
+        let extraPaid: number;
+        let totalPrincipal: number;
+        let totalPaid: number;
+        let endBalance: number;
+
+        if (tenureMonthsNum === null && principalFromEmi + extra >= outstanding) {
+          const interestRecalc = outstanding * mrate;
+          const principalFromEmiRecalc = Math.max(outstanding - extra, 0);
+          emiPaid = Math.round((interestRecalc + principalFromEmiRecalc) * 100) / 100;
+          extraPaid = Math.round(extra * 100) / 100;
+          totalPrincipal = principalFromEmiRecalc + extraPaid;
+          totalPaid = Math.round((interestRecalc + totalPrincipal) * 100) / 100;
+          endBalance = 0.0;
+        } else {
+          emiPaid = Math.round(emi * 100) / 100;
+          extraPaid = Math.round(extra * 100) / 100;
+          totalPrincipal = principalFromEmi + extra;
+          totalPaid = Math.round((emiPaid + extraPaid) * 100) / 100;
+          endBalance = outstanding - totalPrincipal;
+        }
+
+        // Fix any negative zero
+        endBalance = Math.round(endBalance * 100) / 100;
+        if (Math.abs(endBalance) < 1e-9) {
+          endBalance = 0.0;
         }
 
         schedule.push({
           month,
-          date: currentDate.toISOString().slice(0, 10),
-          interestRate: Math.round(currentRate * 10000) / 100,
-          startPrincipal: Math.round(outstanding * 100) / 100,
-          emiPaid: Math.round(monthlyEmiNum * 100) / 100,
-          extraPaid: Math.round(usedExtraPayment * 100) / 100,
-          totalPaid: Math.round(totalPayment * 100) / 100,
+          paymentDate: currentDate.toISOString().slice(0, 10),
+          annualInterestRate: Math.round(rate * 10000) / 100,
+          openingBalance: Math.round(outstanding * 100) / 100,
+          monthlyEmi: emiPaid,
+          extraPayment: extraPaid,
+          totalPaymentThisMonth: totalPaid,
           interestPaid: Math.round(interest * 100) / 100,
-          principalPaid: Math.round(finalPrincipalPaid * 100) / 100,
-          endPrincipal: Math.round(endBalance * 100) / 100
+          principalPaid: Math.round(totalPrincipal * 100) / 100,
+          remainingBalance: endBalance
         });
 
         outstanding = endBalance;
-        
-        // Move to next month - use same day of next month
+        if (outstanding <= 0) {
+          break;
+        }
+
+        // Move to next month
         const year = currentDate.getFullYear();
         const monthNum = currentDate.getMonth();
         const day = currentDate.getDate();
+        
+        // Get the last day of current month, then add days to get to next month
+        const lastDay = new Date(year, monthNum + 1, 0).getDate();
         currentDate = new Date(year, monthNum + 1, day);
+        
         month++;
       }
 
@@ -307,8 +371,8 @@ const LoanCalculator = () => {
   };
 
   const totalInterest = schedule.reduce((sum, row) => sum + row.interestPaid, 0);
-  const totalExtra = schedule.reduce((sum, row) => sum + row.extraPaid, 0);
-  const totalPaid = schedule.reduce((sum, row) => sum + row.totalPaid, 0);
+  const totalExtra = schedule.reduce((sum, row) => sum + row.extraPayment, 0);
+  const totalPaid = schedule.reduce((sum, row) => sum + row.totalPaymentThisMonth, 0);
 
   return (
     <div className="min-h-screen bg-gradient-background p-4">
@@ -333,6 +397,27 @@ const LoanCalculator = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-6">
+              {/* Calculation Mode */}
+              <div>
+                <Label className="text-lg font-semibold">Calculation Mode</Label>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <Button
+                    onClick={() => setCalculationMode('fixed-emi')}
+                    variant={calculationMode === 'fixed-emi' ? 'default' : 'outline'}
+                    className="w-full"
+                  >
+                    Fixed EMI
+                  </Button>
+                  <Button
+                    onClick={() => setCalculationMode('tenure')}
+                    variant={calculationMode === 'tenure' ? 'default' : 'outline'}
+                    className="w-full"
+                  >
+                    Fixed Tenure
+                  </Button>
+                </div>
+              </div>
+
               {/* Basic Loan Info */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -347,18 +432,33 @@ const LoanCalculator = () => {
                     min="0"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="monthlyEmi">Monthly EMI (₹)</Label>
-                  <Input
-                    id="monthlyEmi"
-                    type="number"
-                    value={monthlyEmi}
-                    onChange={(e) => setMonthlyEmi(e.target.value)}
-                    className="mt-1"
-                    placeholder="Enter monthly EMI"
-                    min="0"
-                  />
-                </div>
+                {calculationMode === 'fixed-emi' ? (
+                  <div>
+                    <Label htmlFor="fixedEmi">Fixed EMI (₹)</Label>
+                    <Input
+                      id="fixedEmi"
+                      type="number"
+                      value={fixedEmi}
+                      onChange={(e) => setFixedEmi(e.target.value)}
+                      className="mt-1"
+                      placeholder="Enter fixed EMI"
+                      min="0"
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <Label htmlFor="tenureMonths">Tenure (Months)</Label>
+                    <Input
+                      id="tenureMonths"
+                      type="number"
+                      value={tenureMonths}
+                      onChange={(e) => setTenureMonths(e.target.value)}
+                      className="mt-1"
+                      placeholder="Enter tenure in months"
+                      min="1"
+                    />
+                  </div>
+                )}
                 <div>
                   <Label htmlFor="startDate">Start Date</Label>
                   <Input
@@ -537,30 +637,30 @@ const LoanCalculator = () => {
                   <thead>
                     <tr className="border-b bg-muted/50">
                       <th className="text-left p-2">Month</th>
-                      <th className="text-left p-2">Date</th>
-                      <th className="text-left p-2">Rate %</th>
-                      <th className="text-right p-2">Start Principal</th>
-                      <th className="text-right p-2">EMI</th>
-                      <th className="text-right p-2">Extra</th>
-                      <th className="text-right p-2">Total Paid</th>
-                      <th className="text-right p-2">Interest</th>
-                      <th className="text-right p-2">Principal</th>
-                      <th className="text-right p-2">End Principal</th>
+                      <th className="text-left p-2">Payment Date</th>
+                      <th className="text-left p-2">Annual Rate %</th>
+                      <th className="text-right p-2">Opening Balance</th>
+                      <th className="text-right p-2">Monthly EMI</th>
+                      <th className="text-right p-2">Extra Payment</th>
+                      <th className="text-right p-2">Total Payment</th>
+                      <th className="text-right p-2">Interest Paid</th>
+                      <th className="text-right p-2">Principal Paid</th>
+                      <th className="text-right p-2">Remaining Balance</th>
                     </tr>
                   </thead>
                   <tbody>
                     {schedule.map((row) => (
                       <tr key={row.month} className="border-b hover:bg-muted/30">
                         <td className="p-2 font-medium">{row.month}</td>
-                        <td className="p-2">{row.date}</td>
-                        <td className="p-2">{row.interestRate}%</td>
-                        <td className="p-2 text-right">₹{row.startPrincipal.toLocaleString()}</td>
-                        <td className="p-2 text-right">₹{row.emiPaid.toLocaleString()}</td>
-                        <td className="p-2 text-right text-secondary">₹{row.extraPaid.toLocaleString()}</td>
-                        <td className="p-2 text-right font-medium">₹{row.totalPaid.toLocaleString()}</td>
+                        <td className="p-2">{row.paymentDate}</td>
+                        <td className="p-2">{row.annualInterestRate}%</td>
+                        <td className="p-2 text-right">₹{row.openingBalance.toLocaleString()}</td>
+                        <td className="p-2 text-right">₹{row.monthlyEmi.toLocaleString()}</td>
+                        <td className="p-2 text-right text-secondary">₹{row.extraPayment.toLocaleString()}</td>
+                        <td className="p-2 text-right font-medium">₹{row.totalPaymentThisMonth.toLocaleString()}</td>
                         <td className="p-2 text-right text-destructive">₹{row.interestPaid.toLocaleString()}</td>
                         <td className="p-2 text-right text-primary">₹{row.principalPaid.toLocaleString()}</td>
-                        <td className="p-2 text-right">₹{row.endPrincipal.toLocaleString()}</td>
+                        <td className="p-2 text-right">₹{row.remainingBalance.toLocaleString()}</td>
                       </tr>
                     ))}
                   </tbody>
