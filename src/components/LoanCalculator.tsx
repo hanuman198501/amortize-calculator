@@ -4,7 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Calculator, Plus, Trash2, GripVertical } from 'lucide-react';
+import { Calculator, Plus, Trash2, GripVertical, Info } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import LoanCharts from './LoanCharts';
 import {
   DndContext,
   closestCenter,
@@ -373,6 +375,7 @@ const LoanCalculator = () => {
   const totalInterest = schedule.reduce((sum, row) => sum + row.interestPaid, 0);
   const totalExtra = schedule.reduce((sum, row) => sum + row.extraPayment, 0);
   const totalPaid = schedule.reduce((sum, row) => sum + row.totalPaymentThisMonth, 0);
+  const totalEmiPayments = schedule.reduce((sum, row) => sum + row.monthlyEmi, 0);
 
   return (
     <div className="min-h-screen bg-gradient-background p-4">
@@ -421,7 +424,19 @@ const LoanCalculator = () => {
               {/* Basic Loan Info */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="loanAmount">Loan Amount (₹)</Label>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="loanAmount">Loan Amount (₹)</Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info className="w-4 h-4 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>The total amount you want to borrow</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                   <Input
                     id="loanAmount"
                     type="number"
@@ -434,7 +449,19 @@ const LoanCalculator = () => {
                 </div>
                 {calculationMode === 'fixed-emi' ? (
                   <div>
-                    <Label htmlFor="fixedEmi">Fixed EMI (₹)</Label>
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="fixedEmi">Fixed EMI (₹)</Label>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Info className="w-4 h-4 text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Fixed monthly payment amount you can afford</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                     <Input
                       id="fixedEmi"
                       type="number"
@@ -447,7 +474,19 @@ const LoanCalculator = () => {
                   </div>
                 ) : (
                   <div>
-                    <Label htmlFor="tenureMonths">Tenure (Months)</Label>
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="tenureMonths">Tenure (Months)</Label>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Info className="w-4 h-4 text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Total number of months to repay the loan</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                     <Input
                       id="tenureMonths"
                       type="number"
@@ -460,7 +499,19 @@ const LoanCalculator = () => {
                   </div>
                 )}
                 <div>
-                  <Label htmlFor="startDate">Start Date</Label>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="startDate">Start Date</Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info className="w-4 h-4 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>When you plan to start making payments</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                   <Input
                     id="startDate"
                     type="date"
@@ -470,7 +521,19 @@ const LoanCalculator = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="defaultExtra">Default Extra Payment (₹)</Label>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="defaultExtra">Default Extra Payment (₹)</Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info className="w-4 h-4 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Additional amount you'll pay each month to reduce principal</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                   <Input
                     id="defaultExtra"
                     type="number"
@@ -486,7 +549,19 @@ const LoanCalculator = () => {
               {/* Interest Rates */}
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <Label className="text-lg font-semibold">Interest Rate Schedule</Label>
+                  <div className="flex items-center gap-2">
+                    <Label className="text-lg font-semibold">Interest Rate Schedule</Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info className="w-4 h-4 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Define when interest rates change during the loan period</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                   <Button
                     onClick={addInterestRate}
                     size="sm"
@@ -539,7 +614,19 @@ const LoanCalculator = () => {
               {/* Extra Payments */}
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <Label className="text-lg font-semibold">Extra Payments by Month</Label>
+                  <div className="flex items-center gap-2">
+                    <Label className="text-lg font-semibold">Extra Payments by Month</Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info className="w-4 h-4 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Schedule additional payments for specific months</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                   <Button
                     onClick={addExtraPayment}
                     size="sm"
@@ -588,7 +675,7 @@ const LoanCalculator = () => {
                 <CardTitle>Loan Summary</CardTitle>
               </CardHeader>
               <CardContent className="p-6">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <div className="text-center p-4 bg-muted rounded-lg">
                     <div className="text-2xl font-bold text-primary">
                       ₹{parseFloat(loanAmount || '0').toLocaleString()}
@@ -608,12 +695,18 @@ const LoanCalculator = () => {
                     <div className="text-sm text-muted-foreground">Extra Payments</div>
                   </div>
                   <div className="text-center p-4 bg-muted rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600">
+                      ₹{Math.round(totalEmiPayments).toLocaleString()}
+                    </div>
+                    <div className="text-sm text-muted-foreground">EMI Payments</div>
+                  </div>
+                  <div className="text-center p-4 bg-muted rounded-lg">
                     <div className="text-2xl font-bold text-foreground">
                       ₹{Math.round(totalPaid).toLocaleString()}
                     </div>
                     <div className="text-sm text-muted-foreground">Total Paid</div>
                   </div>
-                  <div className="col-span-2 text-center p-4 bg-primary text-primary-foreground rounded-lg">
+                  <div className="text-center p-4 bg-primary text-primary-foreground rounded-lg">
                     <div className="text-3xl font-bold">
                       {schedule.length} months
                     </div>
@@ -625,7 +718,7 @@ const LoanCalculator = () => {
           )}
         </div>
 
-        {/* Results Table */}
+        {/* Amortization Schedule Table */}
         {schedule.length > 0 && (
           <Card className="shadow-strong animate-fade-in">
             <CardHeader>
@@ -656,10 +749,26 @@ const LoanCalculator = () => {
                         <td className="p-2">{row.annualInterestRate}%</td>
                         <td className="p-2 text-right">₹{row.openingBalance.toLocaleString()}</td>
                         <td className="p-2 text-right">₹{row.monthlyEmi.toLocaleString()}</td>
-                        <td className="p-2 text-right text-secondary">₹{row.extraPayment.toLocaleString()}</td>
+                        <td className="p-2 text-right">
+                          {row.extraPayment > 0 ? (
+                            <span className="bg-secondary/20 text-secondary px-2 py-1 rounded-full text-xs font-medium">
+                              ₹{row.extraPayment.toLocaleString()}
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground">₹0</span>
+                          )}
+                        </td>
                         <td className="p-2 text-right font-medium">₹{row.totalPaymentThisMonth.toLocaleString()}</td>
-                        <td className="p-2 text-right text-destructive">₹{row.interestPaid.toLocaleString()}</td>
-                        <td className="p-2 text-right text-primary">₹{row.principalPaid.toLocaleString()}</td>
+                        <td className="p-2 text-right">
+                          <span className="bg-destructive/20 text-destructive px-2 py-1 rounded-full text-xs font-medium">
+                            ₹{row.interestPaid.toLocaleString()}
+                          </span>
+                        </td>
+                        <td className="p-2 text-right">
+                          <span className="bg-primary/20 text-primary px-2 py-1 rounded-full text-xs font-medium">
+                            ₹{row.principalPaid.toLocaleString()}
+                          </span>
+                        </td>
                         <td className="p-2 text-right">₹{row.remainingBalance.toLocaleString()}</td>
                       </tr>
                     ))}
@@ -668,6 +777,11 @@ const LoanCalculator = () => {
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {/* Charts */}
+        {schedule.length > 0 && (
+          <LoanCharts schedule={schedule} loanAmount={parseFloat(loanAmount || '0')} />
         )}
 
         {/* Disclaimer */}
