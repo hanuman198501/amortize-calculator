@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Calculator, Plus, Trash2, GripVertical, Info } from 'lucide-react';
+import { Calculator, Plus, Trash2, GripVertical, Info, ChevronDown } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import LoanCharts from './LoanCharts';
 import {
   DndContext,
@@ -122,6 +123,8 @@ const LoanCalculator = () => {
   const [extraPayments, setExtraPayments] = useState<ExtraPayment[]>([]);
   const [schedule, setSchedule] = useState<AmortizationRow[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
+  const [tooltipStates, setTooltipStates] = useState<{ [key: string]: boolean }>({});
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -172,6 +175,20 @@ const LoanCalculator = () => {
         return arrayMove(items, oldIndex, newIndex);
       });
     }
+  };
+
+  const toggleTooltip = (key: string) => {
+    setTooltipStates(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
+
+  const closeTooltip = (key: string) => {
+    setTooltipStates(prev => ({
+      ...prev,
+      [key]: false
+    }));
   };
 
   const getInterestRate = (currentDate: Date, interestSchedule: InterestRate[]): number => {
@@ -427,11 +444,18 @@ const LoanCalculator = () => {
                   <div className="flex items-center gap-2">
                     <Label htmlFor="loanAmount">Loan Amount (₹)</Label>
                     <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <Info className="w-4 h-4 text-muted-foreground" />
+                      <Tooltip open={tooltipStates.loanAmount}>
+                        <TooltipTrigger 
+                          onClick={() => toggleTooltip('loanAmount')}
+                          onMouseEnter={() => setTooltipStates(prev => ({ ...prev, loanAmount: true }))}
+                          onMouseLeave={() => setTooltipStates(prev => ({ ...prev, loanAmount: false }))}
+                        >
+                          <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
                         </TooltipTrigger>
-                        <TooltipContent>
+                        <TooltipContent 
+                          onPointerDownOutside={() => closeTooltip('loanAmount')}
+                          onEscapeKeyDown={() => closeTooltip('loanAmount')}
+                        >
                           <p>The total amount you want to borrow</p>
                         </TooltipContent>
                       </Tooltip>
@@ -452,11 +476,18 @@ const LoanCalculator = () => {
                     <div className="flex items-center gap-2">
                       <Label htmlFor="fixedEmi">Fixed EMI (₹)</Label>
                       <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <Info className="w-4 h-4 text-muted-foreground" />
+                        <Tooltip open={tooltipStates.fixedEmi}>
+                          <TooltipTrigger 
+                            onClick={() => toggleTooltip('fixedEmi')}
+                            onMouseEnter={() => setTooltipStates(prev => ({ ...prev, fixedEmi: true }))}
+                            onMouseLeave={() => setTooltipStates(prev => ({ ...prev, fixedEmi: false }))}
+                          >
+                            <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
                           </TooltipTrigger>
-                          <TooltipContent>
+                          <TooltipContent 
+                            onPointerDownOutside={() => closeTooltip('fixedEmi')}
+                            onEscapeKeyDown={() => closeTooltip('fixedEmi')}
+                          >
                             <p>Fixed monthly payment amount you can afford</p>
                           </TooltipContent>
                         </Tooltip>
@@ -477,11 +508,18 @@ const LoanCalculator = () => {
                     <div className="flex items-center gap-2">
                       <Label htmlFor="tenureMonths">Tenure (Months)</Label>
                       <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <Info className="w-4 h-4 text-muted-foreground" />
+                        <Tooltip open={tooltipStates.tenureMonths}>
+                          <TooltipTrigger 
+                            onClick={() => toggleTooltip('tenureMonths')}
+                            onMouseEnter={() => setTooltipStates(prev => ({ ...prev, tenureMonths: true }))}
+                            onMouseLeave={() => setTooltipStates(prev => ({ ...prev, tenureMonths: false }))}
+                          >
+                            <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
                           </TooltipTrigger>
-                          <TooltipContent>
+                          <TooltipContent 
+                            onPointerDownOutside={() => closeTooltip('tenureMonths')}
+                            onEscapeKeyDown={() => closeTooltip('tenureMonths')}
+                          >
                             <p>Total number of months to repay the loan</p>
                           </TooltipContent>
                         </Tooltip>
@@ -502,11 +540,18 @@ const LoanCalculator = () => {
                   <div className="flex items-center gap-2">
                     <Label htmlFor="startDate">Start Date</Label>
                     <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <Info className="w-4 h-4 text-muted-foreground" />
+                      <Tooltip open={tooltipStates.startDate}>
+                        <TooltipTrigger 
+                          onClick={() => toggleTooltip('startDate')}
+                          onMouseEnter={() => setTooltipStates(prev => ({ ...prev, startDate: true }))}
+                          onMouseLeave={() => setTooltipStates(prev => ({ ...prev, startDate: false }))}
+                        >
+                          <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
                         </TooltipTrigger>
-                        <TooltipContent>
+                        <TooltipContent 
+                          onPointerDownOutside={() => closeTooltip('startDate')}
+                          onEscapeKeyDown={() => closeTooltip('startDate')}
+                        >
                           <p>When you plan to start making payments</p>
                         </TooltipContent>
                       </Tooltip>
@@ -520,30 +565,6 @@ const LoanCalculator = () => {
                     className="mt-1"
                   />
                 </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="defaultExtra">Default Extra Payment (₹)</Label>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <Info className="w-4 h-4 text-muted-foreground" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Additional amount you'll pay each month to reduce principal</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                  <Input
-                    id="defaultExtra"
-                    type="number"
-                    value={defaultExtra}
-                    onChange={(e) => setDefaultExtra(e.target.value)}
-                    className="mt-1"
-                    placeholder="Enter default extra payment"
-                    min="0"
-                  />
-                </div>
               </div>
 
               {/* Interest Rates */}
@@ -552,11 +573,18 @@ const LoanCalculator = () => {
                   <div className="flex items-center gap-2">
                     <Label className="text-lg font-semibold">Interest Rate Schedule</Label>
                     <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <Info className="w-4 h-4 text-muted-foreground" />
+                      <Tooltip open={tooltipStates.interestRate}>
+                        <TooltipTrigger 
+                          onClick={() => toggleTooltip('interestRate')}
+                          onMouseEnter={() => setTooltipStates(prev => ({ ...prev, interestRate: true }))}
+                          onMouseLeave={() => setTooltipStates(prev => ({ ...prev, interestRate: false }))}
+                        >
+                          <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
                         </TooltipTrigger>
-                        <TooltipContent>
+                        <TooltipContent 
+                          onPointerDownOutside={() => closeTooltip('interestRate')}
+                          onEscapeKeyDown={() => closeTooltip('interestRate')}
+                        >
                           <p>Define when interest rates change during the loan period</p>
                         </TooltipContent>
                       </Tooltip>
@@ -611,52 +639,128 @@ const LoanCalculator = () => {
                 </div>
               </div>
 
-              {/* Extra Payments */}
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <Label className="text-lg font-semibold">Extra Payments by Month</Label>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <Info className="w-4 h-4 text-muted-foreground" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Schedule additional payments for specific months</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                  <Button
-                    onClick={addExtraPayment}
-                    size="sm"
-                    variant="outline"
-                    className="flex items-center gap-1"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add Payment
-                  </Button>
+              {/* Advanced Options */}
+              <Collapsible open={showAdvancedOptions} onOpenChange={setShowAdvancedOptions}>
+                <div className="border rounded-lg p-4 bg-muted/20">
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost" className="w-full justify-between p-0 h-auto">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-lg font-semibold cursor-pointer">Advanced Options (Optional)</Label>
+                        <TooltipProvider>
+                          <Tooltip open={tooltipStates.advanced}>
+                            <TooltipTrigger 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleTooltip('advanced');
+                              }}
+                              onMouseEnter={() => setTooltipStates(prev => ({ ...prev, advanced: true }))}
+                              onMouseLeave={() => setTooltipStates(prev => ({ ...prev, advanced: false }))}
+                            >
+                              <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
+                            </TooltipTrigger>
+                            <TooltipContent 
+                              onPointerDownOutside={() => closeTooltip('advanced')}
+                              onEscapeKeyDown={() => closeTooltip('advanced')}
+                            >
+                              <p>Configure additional payment settings and monthly extras</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                      <ChevronDown className={`w-4 h-4 transition-transform ${showAdvancedOptions ? 'rotate-180' : ''}`} />
+                    </Button>
+                  </CollapsibleTrigger>
+                  
+                  <CollapsibleContent className="space-y-4 mt-4">
+                    {/* Default Extra Payment */}
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="defaultExtra">Default Extra Payment (₹)</Label>
+                        <TooltipProvider>
+                          <Tooltip open={tooltipStates.defaultExtra}>
+                            <TooltipTrigger 
+                              onClick={() => toggleTooltip('defaultExtra')}
+                              onMouseEnter={() => setTooltipStates(prev => ({ ...prev, defaultExtra: true }))}
+                              onMouseLeave={() => setTooltipStates(prev => ({ ...prev, defaultExtra: false }))}
+                            >
+                              <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
+                            </TooltipTrigger>
+                            <TooltipContent 
+                              onPointerDownOutside={() => closeTooltip('defaultExtra')}
+                              onEscapeKeyDown={() => closeTooltip('defaultExtra')}
+                            >
+                              <p>Additional amount you'll pay each month to reduce principal</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                      <Input
+                        id="defaultExtra"
+                        type="number"
+                        value={defaultExtra}
+                        onChange={(e) => setDefaultExtra(e.target.value)}
+                        className="mt-1"
+                        placeholder="Enter default extra payment"
+                        min="0"
+                      />
+                    </div>
+
+                    {/* Extra Payments by Month */}
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <Label className="text-lg font-semibold">Extra Payments by Month</Label>
+                          <TooltipProvider>
+                            <Tooltip open={tooltipStates.extraPayments}>
+                              <TooltipTrigger 
+                                onClick={() => toggleTooltip('extraPayments')}
+                                onMouseEnter={() => setTooltipStates(prev => ({ ...prev, extraPayments: true }))}
+                                onMouseLeave={() => setTooltipStates(prev => ({ ...prev, extraPayments: false }))}
+                              >
+                                <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
+                              </TooltipTrigger>
+                              <TooltipContent 
+                                onPointerDownOutside={() => closeTooltip('extraPayments')}
+                                onEscapeKeyDown={() => closeTooltip('extraPayments')}
+                              >
+                                <p>Schedule additional payments for specific months</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <Button
+                          onClick={addExtraPayment}
+                          size="sm"
+                          variant="outline"
+                          className="flex items-center gap-1"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add Payment
+                        </Button>
+                      </div>
+                      <div className="space-y-2 max-h-48 overflow-y-auto">
+                        <DndContext
+                          sensors={sensors}
+                          collisionDetection={closestCenter}
+                          onDragEnd={handleDragEnd}
+                        >
+                          <SortableContext items={extraPayments.map(p => p.id)} strategy={verticalListSortingStrategy}>
+                            {extraPayments.map((payment, index) => (
+                              <SortableExtraPaymentItem
+                                key={payment.id}
+                                payment={payment}
+                                index={index}
+                                onUpdate={updateExtraPayment}
+                                onRemove={removeExtraPayment}
+                              />
+                            ))}
+                          </SortableContext>
+                        </DndContext>
+                      </div>
+                    </div>
+                  </CollapsibleContent>
                 </div>
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
-                  >
-                    <SortableContext items={extraPayments.map(p => p.id)} strategy={verticalListSortingStrategy}>
-                      {extraPayments.map((payment, index) => (
-                        <SortableExtraPaymentItem
-                          key={payment.id}
-                          payment={payment}
-                          index={index}
-                          onUpdate={updateExtraPayment}
-                          onRemove={removeExtraPayment}
-                        />
-                      ))}
-                    </SortableContext>
-                  </DndContext>
-                </div>
-              </div>
+              </Collapsible>
 
               <Button 
                 onClick={calculateAmortization}

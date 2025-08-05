@@ -74,7 +74,7 @@ const LoanCharts: React.FC<LoanChartsProps> = ({ schedule, loanAmount }) => {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, value }) => `${name}: ₹${Math.round(value).toLocaleString()}`}
+                label={({ name, value, percent }) => `${(percent * 100).toFixed(1)}%`}
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"
