@@ -379,7 +379,7 @@ const LoanCalculator = () => {
 
   return (
     <div className="min-h-screen bg-gradient-background p-4">
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center py-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">
@@ -390,9 +390,9 @@ const LoanCalculator = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Input Form */}
-          <Card className="shadow-strong">
+        {/* Centered and wider Loan Parameters */}
+        <div className="flex justify-center">
+          <Card className="shadow-strong w-full max-w-4xl">
             <CardHeader className="bg-gradient-primary text-white">
               <CardTitle className="flex items-center gap-2">
                 <Calculator className="w-6 h-6" />
@@ -667,55 +667,6 @@ const LoanCalculator = () => {
               </Button>
             </CardContent>
           </Card>
-
-          {/* Summary */}
-          {schedule.length > 0 && (
-            <Card className="shadow-strong">
-              <CardHeader className="bg-gradient-secondary text-white">
-                <CardTitle>Loan Summary</CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-muted rounded-lg">
-                    <div className="text-2xl font-bold text-primary">
-                      ₹{parseFloat(loanAmount || '0').toLocaleString()}
-                    </div>
-                    <div className="text-sm text-muted-foreground">Principal Amount</div>
-                  </div>
-                  <div className="text-center p-4 bg-muted rounded-lg">
-                    <div className="text-2xl font-bold text-destructive">
-                      ₹{Math.round(totalInterest).toLocaleString()}
-                    </div>
-                    <div className="text-sm text-muted-foreground">Total Interest</div>
-                  </div>
-                  <div className="text-center p-4 bg-muted rounded-lg">
-                    <div className="text-2xl font-bold text-secondary">
-                      ₹{Math.round(totalExtra).toLocaleString()}
-                    </div>
-                    <div className="text-sm text-muted-foreground">Extra Payments</div>
-                  </div>
-                  <div className="text-center p-4 bg-muted rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">
-                      ₹{Math.round(totalEmiPayments).toLocaleString()}
-                    </div>
-                    <div className="text-sm text-muted-foreground">EMI Payments</div>
-                  </div>
-                  <div className="text-center p-4 bg-muted rounded-lg">
-                    <div className="text-2xl font-bold text-foreground">
-                      ₹{Math.round(totalPaid).toLocaleString()}
-                    </div>
-                    <div className="text-sm text-muted-foreground">Total Paid</div>
-                  </div>
-                  <div className="text-center p-4 bg-primary text-primary-foreground rounded-lg">
-                    <div className="text-3xl font-bold">
-                      {schedule.length} months
-                    </div>
-                    <div className="text-sm opacity-90">Loan Duration</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </div>
 
         {/* Amortization Schedule Table */}
@@ -729,51 +680,92 @@ const LoanCalculator = () => {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b bg-muted/50">
-                      <th className="text-left p-2">Month</th>
-                      <th className="text-left p-2">Payment Date</th>
-                      <th className="text-left p-2">Annual Rate %</th>
-                      <th className="text-right p-2">Opening Balance</th>
-                      <th className="text-right p-2">Monthly EMI</th>
-                      <th className="text-right p-2">Extra Payment</th>
-                      <th className="text-right p-2">Total Payment</th>
-                      <th className="text-right p-2">Interest Paid</th>
-                      <th className="text-right p-2">Principal Paid</th>
-                      <th className="text-right p-2">Remaining Balance</th>
+                      <th className="text-left p-3 font-semibold">Month</th>
+                      <th className="text-left p-3 font-semibold">Date</th>
+                      <th className="text-left p-3 font-semibold">Interest Rate</th>
+                      <th className="text-right p-3 font-semibold">Start Principal</th>
+                      <th className="text-right p-3 font-semibold">EMI Paid</th>
+                      <th className="text-right p-3 font-semibold">Extra Paid</th>
+                      <th className="text-right p-3 font-semibold">Total Paid</th>
+                      <th className="text-right p-3 font-semibold">Interest Paid</th>
+                      <th className="text-right p-3 font-semibold">Principal Paid</th>
+                      <th className="text-right p-3 font-semibold">Remaining Principal</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {schedule.map((row) => (
-                      <tr key={row.month} className="border-b hover:bg-muted/30">
-                        <td className="p-2 font-medium">{row.month}</td>
-                        <td className="p-2">{row.paymentDate}</td>
-                        <td className="p-2">{row.annualInterestRate}%</td>
-                        <td className="p-2 text-right">₹{row.openingBalance.toLocaleString()}</td>
-                        <td className="p-2 text-right">₹{row.monthlyEmi.toLocaleString()}</td>
-                        <td className="p-2 text-right">
+                    {schedule.map((row, index) => (
+                      <tr key={row.month} className={`border-b hover:bg-muted/20 ${index % 2 === 0 ? 'bg-background' : 'bg-muted/10'}`}>
+                        <td className="p-3 font-medium">{row.month}</td>
+                        <td className="p-3">{new Date(row.paymentDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                        <td className="p-3">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                            {row.annualInterestRate.toFixed(2)}%
+                          </span>
+                        </td>
+                        <td className="p-3 text-right">₹{row.openingBalance.toLocaleString()}</td>
+                        <td className="p-3 text-right">₹{row.monthlyEmi.toLocaleString()}</td>
+                        <td className="p-3 text-right">
                           {row.extraPayment > 0 ? (
-                            <span className="bg-secondary/20 text-secondary px-2 py-1 rounded-full text-xs font-medium">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300">
                               ₹{row.extraPayment.toLocaleString()}
                             </span>
                           ) : (
-                            <span className="text-muted-foreground">₹0</span>
+                            "₹0"
                           )}
                         </td>
-                        <td className="p-2 text-right font-medium">₹{row.totalPaymentThisMonth.toLocaleString()}</td>
-                        <td className="p-2 text-right">
-                          <span className="bg-destructive/20 text-destructive px-2 py-1 rounded-full text-xs font-medium">
+                        <td className="p-3 text-right font-medium">₹{row.totalPaymentThisMonth.toLocaleString()}</td>
+                        <td className="p-3 text-right">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
                             ₹{row.interestPaid.toLocaleString()}
                           </span>
                         </td>
-                        <td className="p-2 text-right">
-                          <span className="bg-primary/20 text-primary px-2 py-1 rounded-full text-xs font-medium">
+                        <td className="p-3 text-right">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
                             ₹{row.principalPaid.toLocaleString()}
                           </span>
                         </td>
-                        <td className="p-2 text-right">₹{row.remainingBalance.toLocaleString()}</td>
+                        <td className="p-3 text-right font-medium">₹{row.remainingBalance.toLocaleString()}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Loan Summary */}
+        {schedule.length > 0 && (
+          <Card className="shadow-strong">
+            <CardHeader className="bg-gradient-secondary text-white">
+              <CardTitle>Loan Summary</CardTitle>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
+                  <h3 className="text-sm font-medium text-primary">Total Loan Amount</h3>
+                  <p className="text-xl font-bold text-primary">₹{parseFloat(loanAmount || '0').toLocaleString()}</p>
+                </div>
+                <div className="p-4 bg-destructive/5 border border-destructive/20 rounded-lg">
+                  <h3 className="text-sm font-medium text-destructive">Total Interest Paid</h3>
+                  <p className="text-xl font-bold text-destructive">₹{Math.round(totalInterest).toLocaleString()}</p>
+                </div>
+                <div className="p-4 bg-purple-500/5 border border-purple-500/20 rounded-lg">
+                  <h3 className="text-sm font-medium text-purple-700 dark:text-purple-300">Total Extra Payments</h3>
+                  <p className="text-xl font-bold text-purple-700 dark:text-purple-300">₹{Math.round(totalExtra).toLocaleString()}</p>
+                </div>
+                <div className="p-4 bg-green-500/5 border border-green-500/20 rounded-lg">
+                  <h3 className="text-sm font-medium text-green-700 dark:text-green-300">EMI Payments</h3>
+                  <p className="text-xl font-bold text-green-700 dark:text-green-300">₹{Math.round(totalEmiPayments).toLocaleString()}</p>
+                </div>
+                <div className="p-4 bg-muted border rounded-lg">
+                  <h3 className="text-sm font-medium text-muted-foreground">Total Amount Paid</h3>
+                  <p className="text-xl font-bold text-foreground">₹{Math.round(totalPaid).toLocaleString()}</p>
+                </div>
+                <div className="p-4 bg-blue-500/5 border border-blue-500/20 rounded-lg">
+                  <h3 className="text-sm font-medium text-blue-700 dark:text-blue-300">Loan Duration</h3>
+                  <p className="text-xl font-bold text-blue-700 dark:text-blue-300">{schedule.length} months</p>
+                </div>
               </div>
             </CardContent>
           </Card>

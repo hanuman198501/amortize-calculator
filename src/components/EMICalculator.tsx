@@ -70,7 +70,7 @@ const EMICalculator = () => {
 
   return (
     <div className="min-h-screen bg-gradient-background p-4">
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center py-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">
@@ -81,9 +81,9 @@ const EMICalculator = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Input Form */}
-          <Card className="shadow-strong">
+        {/* Centered Input Form */}
+        <div className="flex justify-center">
+          <Card className="shadow-strong w-full max-w-2xl">
             <CardHeader className="bg-gradient-primary text-white">
               <CardTitle className="flex items-center gap-2">
                 <Calculator className="w-6 h-6" />
@@ -140,10 +140,12 @@ const EMICalculator = () => {
               </Button>
             </CardContent>
           </Card>
+        </div>
 
-          {/* Results */}
-          {emi !== null && (
-            <Card className="shadow-strong">
+        {/* Results - Below the form */}
+        {emi !== null && (
+          <div className="flex justify-center">
+            <Card className="shadow-strong w-full max-w-2xl">
               <CardHeader className="bg-gradient-secondary text-white">
                 <CardTitle>EMI Breakdown</CardTitle>
               </CardHeader>
@@ -156,7 +158,7 @@ const EMICalculator = () => {
                     <div className="text-sm opacity-90">Monthly EMI</div>
                   </div>
                   
-                  <div className="grid grid-cols-1 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="text-center p-4 bg-muted rounded-lg">
                       <div className="text-2xl font-bold text-foreground">
                         ₹{totalPayment.toLocaleString()}
@@ -173,8 +175,8 @@ const EMICalculator = () => {
                 </div>
               </CardContent>
             </Card>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Disclaimer */}
         <div className="text-center py-6">
