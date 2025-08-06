@@ -59,12 +59,64 @@ const LoanCharts: React.FC<LoanChartsProps> = ({ schedule, loanAmount }) => {
     balance: row.remainingBalance,
   }));
 
+  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, value }: any) => {
+    const RADIAN = Math.PI / 180;
+    // Position for percentage inside the slice
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    
+    // Position for amount outside the slice
+    const labelRadius = outerRadius + 30;
+    const labelX = cx + labelRadius * Math.cos(-midAngle * RADIAN);
+    const labelY = cy + labelRadius * Math.sin(-midAngle * RADIAN);
+    
+    return (
+      <g>
+        {/* Percentage inside */}
+        <text 
+          x={x} 
+          y={y} 
+          fill="white" 
+          textAnchor={x > cx ? 'start' : 'end'} 
+          dominantBaseline="central"
+          className="font-semibold text-sm"
+        >
+          {`${(percent * 100).toFixed(0)}%`}
+        </text>
+        {/* Amount outside */}
+        <text 
+          x={labelX} 
+          y={labelY} 
+          fill="hsl(var(--foreground))" 
+          textAnchor={labelX > cx ? 'start' : 'end'} 
+          dominantBaseline="central"
+          className="text-xs font-medium"
+        >
+          {`₹${Math.round(value).toLocaleString()}`}
+        </text>
+      </g>
+    );
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Payment Breakdown Pie Chart */}
       <Card className="shadow-strong">
-        <CardHeader>
+        <CardHeader className="relative">
           <CardTitle>Payment Breakdown</CardTitle>
+          {/* Legend in top-right */}
+          <div className="absolute top-4 right-4 flex flex-col space-y-1 text-xs">
+            {pieData.map((entry, index) => (
+              <div key={index} className="flex items-center space-x-2">
+                <div 
+                  className="w-3 h-3 rounded-sm" 
+                  style={{ backgroundColor: entry.color }}
+                />
+                <span className="text-muted-foreground">{entry.name}</span>
+              </div>
+            ))}
+          </div>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
@@ -74,7 +126,7 @@ const LoanCharts: React.FC<LoanChartsProps> = ({ schedule, loanAmount }) => {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, value, percent }) => `${(percent * 100).toFixed(1)}%`}
+                label={renderCustomizedLabel}
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"
@@ -83,7 +135,6 @@ const LoanCharts: React.FC<LoanChartsProps> = ({ schedule, loanAmount }) => {
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value: number) => [`₹${Math.round(value).toLocaleString()}`, '']} />
             </PieChart>
           </ResponsiveContainer>
         </CardContent>

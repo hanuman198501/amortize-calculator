@@ -641,7 +641,7 @@ const LoanCalculator = () => {
 
               {/* Advanced Options */}
               <Collapsible open={showAdvancedOptions} onOpenChange={setShowAdvancedOptions}>
-                <div className="border rounded-lg p-4 bg-muted/20">
+                <div className="border rounded-lg p-4">
                   <CollapsibleTrigger asChild>
                     <Button variant="ghost" className="w-full justify-between p-0 h-auto">
                       <div className="flex items-center gap-2">
