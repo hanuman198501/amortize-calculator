@@ -81,6 +81,29 @@ const translations = {
     'tooltip.extraPayments': 'Add extra payments for specific months to reduce interest',
     'tooltip.variableRates': 'Add different interest rates for different periods',
     
+    // Error Messages
+    'error.inputRequired': 'Input Required',
+    'error.fillAllFields': 'Please fill in all fields',
+    'error.invalidInput': 'Invalid Input',
+    'error.positiveValues': 'Please enter valid positive values',
+    'error.calculationError': 'Calculation Error',
+    'error.checkInputs': 'Please check your inputs and try again',
+    
+    // Success Messages
+    'success.emiCalculated': 'EMI Calculated',
+    'success.yourMonthlyEmi': 'Your monthly EMI is',
+    'success.calculationComplete': 'Calculation Complete',
+    'success.generatedSchedule': 'Generated {count} month schedule',
+    
+    // UI Elements
+    'ui.calculating': 'Calculating...',
+    'ui.selectMonth': 'Select month',
+    'ui.placeholder.enterLoanAmount': 'Enter loan amount',
+    'ui.placeholder.enterTenure': 'Enter tenure in months',
+    'ui.placeholder.enterInterestRate': 'Enter annual interest rate',
+    'ui.placeholder.enterFixedEmi': 'Enter fixed EMI',
+    'ui.educationalPurpose': 'This tool is for educational purposes only. Actual loan details may vary from bank to bank.',
+    
     // Language
     'language.english': 'English',
     'language.hindi': 'हिंदी',
@@ -156,6 +179,29 @@ const translations = {
     'tooltip.startDate': 'ऋण प्रारंभ दिनांक चुनें',
     'tooltip.extraPayments': 'ब्याज कम करने के लिए विशिष्ट महीनों के लिए अतिरिक्त भुगतान जोड़ें',
     'tooltip.variableRates': 'विभिन्न अवधियों के लिए अलग ब्याज दरें जोड़ें',
+    
+    // Error Messages
+    'error.inputRequired': 'इनपुट आवश्यक',
+    'error.fillAllFields': 'कृपया सभी क्षेत्रों को भरें',
+    'error.invalidInput': 'अमान्य इनपुट',
+    'error.positiveValues': 'कृपया वैध धनात्मक मान दर्ज करें',
+    'error.calculationError': 'गणना त्रुटि',
+    'error.checkInputs': 'कृपया अपने इनपुट की जांच करें और पुनः प्रयास करें',
+    
+    // Success Messages
+    'success.emiCalculated': 'ईएमआई गणना',
+    'success.yourMonthlyEmi': 'आपका मासिक ईएमआई है',
+    'success.calculationComplete': 'गणना पूर्ण',
+    'success.generatedSchedule': '{count} महीने की अनुसूची तैयार की गई',
+    
+    // UI Elements
+    'ui.calculating': 'गणना हो रही है...',
+    'ui.selectMonth': 'महीना चुनें',
+    'ui.placeholder.enterLoanAmount': 'ऋण राशि दर्ज करें',
+    'ui.placeholder.enterTenure': 'महीनों में अवधि दर्ज करें',
+    'ui.placeholder.enterInterestRate': 'वार्षिक ब्याज दर दर्ज करें',
+    'ui.placeholder.enterFixedEmi': 'निश्चित ईएमआई दर्ज करें',
+    'ui.educationalPurpose': 'यह उपकरण केवल शैक्षिक उद्देश्यों के लिए है। वास्तविक ऋण विवरण बैंक से बैंक में भिन्न हो सकते हैं।',
     
     // Language
     'language.english': 'English',

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface AmortizationRow {
   month: number;
@@ -27,6 +28,7 @@ const COLORS = {
 };
 
 const LoanCharts: React.FC<LoanChartsProps> = ({ schedule, loanAmount }) => {
+  const { t } = useLanguage();
   if (!schedule.length) return null;
 
   // Calculate totals for pie chart
@@ -35,9 +37,9 @@ const LoanCharts: React.FC<LoanChartsProps> = ({ schedule, loanAmount }) => {
   const totalExtra = schedule.reduce((sum, row) => sum + row.extraPayment, 0);
 
   const pieData = [
-    { name: 'Principal', value: totalPrincipal, color: COLORS.principal },
-    { name: 'Interest', value: totalInterest, color: COLORS.interest },
-    { name: 'Extra Payments', value: totalExtra, color: COLORS.extra },
+    { name: t('charts.principal'), value: totalPrincipal, color: COLORS.principal },
+    { name: t('charts.interest'), value: totalInterest, color: COLORS.interest },
+    { name: t('amortization.extraPayments'), value: totalExtra, color: COLORS.extra },
   ].filter(item => item.value > 0);
 
   // Prepare cumulative data for line chart
@@ -104,7 +106,7 @@ const LoanCharts: React.FC<LoanChartsProps> = ({ schedule, loanAmount }) => {
       {/* Payment Breakdown Pie Chart */}
       <Card className="shadow-strong">
         <CardHeader className="relative">
-          <CardTitle>Payment Breakdown</CardTitle>
+          <CardTitle>{t('charts.paymentBreakdown')}</CardTitle>
           {/* Legend in top-right */}
           <div className="absolute top-4 right-4 flex flex-col space-y-1 text-xs">
             {pieData.map((entry, index) => (
@@ -143,7 +145,7 @@ const LoanCharts: React.FC<LoanChartsProps> = ({ schedule, loanAmount }) => {
       {/* Cumulative Payments Line Chart */}
       <Card className="shadow-strong">
         <CardHeader>
-          <CardTitle>Cumulative Interest vs Principal</CardTitle>
+          <CardTitle>{t('charts.monthlyPayments')}</CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
@@ -158,14 +160,14 @@ const LoanCharts: React.FC<LoanChartsProps> = ({ schedule, loanAmount }) => {
                 dataKey="cumulativeInterest" 
                 stroke={COLORS.interest} 
                 strokeWidth={2}
-                name="Cumulative Interest"
+                name={t('charts.interest')}
               />
               <Line 
                 type="monotone" 
                 dataKey="cumulativePrincipal" 
                 stroke={COLORS.principal} 
                 strokeWidth={2}
-                name="Cumulative Principal"
+                name={t('charts.principal')}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -175,7 +177,7 @@ const LoanCharts: React.FC<LoanChartsProps> = ({ schedule, loanAmount }) => {
       {/* Remaining Balance Chart */}
       <Card className="shadow-strong lg:col-span-2">
         <CardHeader>
-          <CardTitle>Remaining Balance Over Time</CardTitle>
+          <CardTitle>{t('charts.balanceOverTime')}</CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>

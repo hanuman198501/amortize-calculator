@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Calculator, Plus, Trash2, GripVertical, Info, ChevronDown } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -58,6 +59,7 @@ const SortableExtraPaymentItem = ({ payment, index, onUpdate, onRemove }: {
   onUpdate: (index: number, field: 'month' | 'amount', value: string | number) => void;
   onRemove: (index: number) => void;
 }) => {
+  const { t } = useLanguage();
   const {
     attributes,
     listeners,
@@ -81,7 +83,7 @@ const SortableExtraPaymentItem = ({ payment, index, onUpdate, onRemove }: {
         value={payment.month}
         onChange={(e) => onUpdate(index, 'month', e.target.value)}
         className="flex-1"
-        placeholder="Select month"
+        placeholder={t('table.month')}
       />
       <div className="flex items-center gap-1">
         <span className="text-sm text-muted-foreground">₹</span>
@@ -111,6 +113,7 @@ const SortableExtraPaymentItem = ({ payment, index, onUpdate, onRemove }: {
 
 const LoanCalculator = () => {
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [loanAmount, setLoanAmount] = useState<string>('');
   const [calculationMode, setCalculationMode] = useState<'fixed-emi' | 'tenure'>('fixed-emi');
   const [fixedEmi, setFixedEmi] = useState<string>('');
@@ -215,8 +218,8 @@ const LoanCalculator = () => {
   const calculateAmortization = () => {
     if (!loanAmount || !startDate) {
       toast({
-        title: "Input Required",
-        description: "Please fill in loan amount and start date",
+        title: t('error.inputRequired'),
+        description: t('error.fillAllFields'),
         variant: "destructive",
       });
       return;
@@ -224,8 +227,8 @@ const LoanCalculator = () => {
 
     if (calculationMode === 'fixed-emi' && !fixedEmi) {
       toast({
-        title: "Input Required",
-        description: "Please enter fixed EMI amount for fixed-emi mode",
+        title: t('error.inputRequired'),
+        description: t('error.fillAllFields'),
         variant: "destructive",
       });
       return;
@@ -233,8 +236,8 @@ const LoanCalculator = () => {
 
     if (calculationMode === 'tenure' && !tenureMonths) {
       toast({
-        title: "Input Required",
-        description: "Please enter tenure in months for tenure mode",
+        title: t('error.inputRequired'),
+        description: t('error.fillAllFields'),
         variant: "destructive",
       });
       return;
@@ -247,8 +250,8 @@ const LoanCalculator = () => {
 
     if (loanAmountNum <= 0) {
       toast({
-        title: "Invalid Input",
-        description: "Please enter valid positive values for loan amount",
+        title: t('error.invalidInput'),
+        description: t('error.positiveValues'),
         variant: "destructive",
       });
       return;
@@ -256,8 +259,8 @@ const LoanCalculator = () => {
 
     if (calculationMode === 'fixed-emi' && (fixedEmiNum === null || fixedEmiNum <= 0)) {
       toast({
-        title: "Invalid Input",
-        description: "Please enter valid positive EMI amount",
+        title: t('error.invalidInput'),
+        description: t('error.positiveValues'),
         variant: "destructive",
       });
       return;
@@ -265,8 +268,8 @@ const LoanCalculator = () => {
 
     if (calculationMode === 'tenure' && (tenureMonthsNum === null || tenureMonthsNum <= 0)) {
       toast({
-        title: "Invalid Input",
-        description: "Please enter valid tenure in months",
+        title: t('error.invalidInput'),
+        description: t('error.positiveValues'),
         variant: "destructive",
       });
       return;
@@ -375,13 +378,13 @@ const LoanCalculator = () => {
 
       setSchedule(schedule);
       toast({
-        title: "Calculation Complete",
-        description: `Generated ${schedule.length} month schedule`,
+        title: t('success.calculationComplete'),
+        description: t('success.generatedSchedule').replace('{count}', schedule.length.toString()),
       });
     } catch (error) {
       toast({
-        title: "Calculation Error",
-        description: "Please check your inputs and try again",
+        title: t('error.calculationError'),
+        description: t('error.checkInputs'),
         variant: "destructive",
       });
     } finally {
@@ -400,10 +403,10 @@ const LoanCalculator = () => {
         {/* Header */}
         <div className="text-center py-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">
-            Loan Amortization Calculator
+            {t('amortization.title')}
           </h1>
           <p className="text-muted-foreground text-lg">
-            Calculate your loan payment schedule with variable rates and extra payments
+            {t('tooltip.loanAmount')}
           </p>
         </div>
 
@@ -413,7 +416,7 @@ const LoanCalculator = () => {
             <CardHeader className="bg-gradient-primary text-white">
               <CardTitle className="flex items-center gap-2">
                 <Calculator className="w-6 h-6" />
-                Loan Parameters
+                {t('loan.parameters')}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-6">
@@ -426,14 +429,14 @@ const LoanCalculator = () => {
                     variant={calculationMode === 'fixed-emi' ? 'default' : 'outline'}
                     className="w-full"
                   >
-                    Fixed EMI
+                    {t('emi.monthlyEmi')}
                   </Button>
                   <Button
                     onClick={() => setCalculationMode('tenure')}
                     variant={calculationMode === 'tenure' ? 'default' : 'outline'}
                     className="w-full"
                   >
-                    Fixed Tenure
+                    {t('loan.tenure')}
                   </Button>
                 </div>
               </div>
@@ -442,7 +445,7 @@ const LoanCalculator = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <Label htmlFor="loanAmount">Loan Amount (₹)</Label>
+                    <Label htmlFor="loanAmount">{t('loan.amount')}</Label>
                     <TooltipProvider>
                       <Tooltip open={tooltipStates.loanAmount}>
                         <TooltipTrigger 
@@ -456,7 +459,7 @@ const LoanCalculator = () => {
                           onPointerDownOutside={() => closeTooltip('loanAmount')}
                           onEscapeKeyDown={() => closeTooltip('loanAmount')}
                         >
-                          <p>The total amount you want to borrow</p>
+                          <p>{t('tooltip.loanAmount')}</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -467,14 +470,14 @@ const LoanCalculator = () => {
                     value={loanAmount}
                     onChange={(e) => setLoanAmount(e.target.value)}
                     className="mt-1"
-                    placeholder="Enter loan amount"
+                    placeholder={t('loan.amount')}
                     min="0"
                   />
                 </div>
                 {calculationMode === 'fixed-emi' ? (
                   <div>
                     <div className="flex items-center gap-2">
-                      <Label htmlFor="fixedEmi">Fixed EMI (₹)</Label>
+                      <Label htmlFor="fixedEmi">{t('emi.monthlyEmi')} (₹)</Label>
                       <TooltipProvider>
                         <Tooltip open={tooltipStates.fixedEmi}>
                           <TooltipTrigger 
@@ -488,7 +491,7 @@ const LoanCalculator = () => {
                             onPointerDownOutside={() => closeTooltip('fixedEmi')}
                             onEscapeKeyDown={() => closeTooltip('fixedEmi')}
                           >
-                            <p>Fixed monthly payment amount you can afford</p>
+                            <p>{t('tooltip.loanAmount')}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -499,14 +502,14 @@ const LoanCalculator = () => {
                       value={fixedEmi}
                       onChange={(e) => setFixedEmi(e.target.value)}
                       className="mt-1"
-                      placeholder="Enter fixed EMI"
+                      placeholder={t('emi.monthlyEmi')}
                       min="0"
                     />
                   </div>
                 ) : (
                   <div>
                     <div className="flex items-center gap-2">
-                      <Label htmlFor="tenureMonths">Tenure (Months)</Label>
+                      <Label htmlFor="tenureMonths">{t('loan.tenure')}</Label>
                       <TooltipProvider>
                         <Tooltip open={tooltipStates.tenureMonths}>
                           <TooltipTrigger 
@@ -520,7 +523,7 @@ const LoanCalculator = () => {
                             onPointerDownOutside={() => closeTooltip('tenureMonths')}
                             onEscapeKeyDown={() => closeTooltip('tenureMonths')}
                           >
-                            <p>Total number of months to repay the loan</p>
+                            <p>{t('tooltip.tenure')}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -531,14 +534,14 @@ const LoanCalculator = () => {
                       value={tenureMonths}
                       onChange={(e) => setTenureMonths(e.target.value)}
                       className="mt-1"
-                      placeholder="Enter tenure in months"
+                      placeholder={t('loan.tenure')}
                       min="1"
                     />
                   </div>
                 )}
                 <div>
                   <div className="flex items-center gap-2">
-                    <Label htmlFor="startDate">Start Date</Label>
+                    <Label htmlFor="startDate">{t('loan.startDate')}</Label>
                     <TooltipProvider>
                       <Tooltip open={tooltipStates.startDate}>
                         <TooltipTrigger 
@@ -552,7 +555,7 @@ const LoanCalculator = () => {
                           onPointerDownOutside={() => closeTooltip('startDate')}
                           onEscapeKeyDown={() => closeTooltip('startDate')}
                         >
-                          <p>When you plan to start making payments</p>
+                          <p>{t('tooltip.startDate')}</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -597,7 +600,7 @@ const LoanCalculator = () => {
                     className="flex items-center gap-1"
                   >
                     <Plus className="w-4 h-4" />
-                    Add Rate
+                    {t('amortization.addRate')}
                   </Button>
                 </div>
                 <div className="space-y-2 max-h-48 overflow-y-auto">
@@ -645,7 +648,7 @@ const LoanCalculator = () => {
                   <CollapsibleTrigger asChild>
                     <Button variant="ghost" className="w-full justify-between p-0 h-auto">
                       <div className="flex items-center gap-2">
-                        <Label className="text-lg font-semibold cursor-pointer">Advanced Options (Optional)</Label>
+                        <Label className="text-lg font-semibold cursor-pointer">{t('amortization.advancedOptions')}</Label>
                         <TooltipProvider>
                           <Tooltip open={tooltipStates.advanced}>
                             <TooltipTrigger 
@@ -735,7 +738,7 @@ const LoanCalculator = () => {
                           className="flex items-center gap-1"
                         >
                           <Plus className="w-4 h-4" />
-                          Add Payment
+                          {t('amortization.addPayment')}
                         </Button>
                       </div>
                       <div className="space-y-2 max-h-48 overflow-y-auto">
@@ -767,7 +770,7 @@ const LoanCalculator = () => {
                 disabled={isCalculating}
                 className="w-full bg-gradient-primary hover:opacity-90"
               >
-                {isCalculating ? 'Calculating...' : 'Calculate Amortization Schedule'}
+                {isCalculating ? t('ui.calculating') : t('loan.calculate')}
               </Button>
             </CardContent>
           </Card>
@@ -777,23 +780,23 @@ const LoanCalculator = () => {
         {schedule.length > 0 && (
           <Card className="shadow-strong animate-fade-in">
             <CardHeader>
-              <CardTitle>Amortization Schedule</CardTitle>
+              <CardTitle>{t('amortization.schedule')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b bg-muted/50">
-                      <th className="text-left p-3 font-semibold">Month</th>
-                      <th className="text-left p-3 font-semibold">Date</th>
-                      <th className="text-left p-3 font-semibold">Interest Rate</th>
-                      <th className="text-right p-3 font-semibold">Start Principal</th>
-                      <th className="text-right p-3 font-semibold">EMI Paid</th>
-                      <th className="text-right p-3 font-semibold">Extra Paid</th>
-                      <th className="text-right p-3 font-semibold">Total Paid</th>
-                      <th className="text-right p-3 font-semibold">Interest Paid</th>
-                      <th className="text-right p-3 font-semibold">Principal Paid</th>
-                      <th className="text-right p-3 font-semibold">Remaining Principal</th>
+                      <th className="text-left p-3 font-semibold">{t('table.month')}</th>
+                      <th className="text-left p-3 font-semibold">{t('table.date')}</th>
+                      <th className="text-left p-3 font-semibold">{t('table.rate')}</th>
+                      <th className="text-right p-3 font-semibold">{t('table.openingBalance')}</th>
+                      <th className="text-right p-3 font-semibold">{t('table.emi')}</th>
+                      <th className="text-right p-3 font-semibold">{t('table.extraPayment')}</th>
+                      <th className="text-right p-3 font-semibold">{t('table.totalPayment')}</th>
+                      <th className="text-right p-3 font-semibold">{t('table.interestPaid')}</th>
+                      <th className="text-right p-3 font-semibold">{t('table.principalPaid')}</th>
+                      <th className="text-right p-3 font-semibold">{t('table.remainingBalance')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -842,33 +845,33 @@ const LoanCalculator = () => {
         {schedule.length > 0 && (
           <Card className="shadow-strong">
             <CardHeader className="bg-gradient-secondary text-white">
-              <CardTitle>Loan Summary</CardTitle>
+              <CardTitle>{t('amortization.summary')}</CardTitle>
             </CardHeader>
             <CardContent className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
-                  <h3 className="text-sm font-medium text-primary">Total Loan Amount</h3>
+                  <h3 className="text-sm font-medium text-primary">{t('loan.amount')}</h3>
                   <p className="text-xl font-bold text-primary">₹{parseFloat(loanAmount || '0').toLocaleString()}</p>
                 </div>
                 <div className="p-4 bg-destructive/5 border border-destructive/20 rounded-lg">
-                  <h3 className="text-sm font-medium text-destructive">Total Interest Paid</h3>
+                  <h3 className="text-sm font-medium text-destructive">{t('summary.totalInterest')}</h3>
                   <p className="text-xl font-bold text-destructive">₹{Math.round(totalInterest).toLocaleString()}</p>
                 </div>
                 <div className="p-4 bg-purple-500/5 border border-purple-500/20 rounded-lg">
-                  <h3 className="text-sm font-medium text-purple-700 dark:text-purple-300">Total Extra Payments</h3>
+                  <h3 className="text-sm font-medium text-purple-700 dark:text-purple-300">{t('summary.totalExtraPayments')}</h3>
                   <p className="text-xl font-bold text-purple-700 dark:text-purple-300">₹{Math.round(totalExtra).toLocaleString()}</p>
                 </div>
                 <div className="p-4 bg-green-500/5 border border-green-500/20 rounded-lg">
-                  <h3 className="text-sm font-medium text-green-700 dark:text-green-300">EMI Payments</h3>
+                  <h3 className="text-sm font-medium text-green-700 dark:text-green-300">{t('emi.monthlyEmi')}</h3>
                   <p className="text-xl font-bold text-green-700 dark:text-green-300">₹{Math.round(totalEmiPayments).toLocaleString()}</p>
                 </div>
                 <div className="p-4 bg-muted border rounded-lg">
-                  <h3 className="text-sm font-medium text-muted-foreground">Total Amount Paid</h3>
+                  <h3 className="text-sm font-medium text-muted-foreground">{t('summary.totalAmount')}</h3>
                   <p className="text-xl font-bold text-foreground">₹{Math.round(totalPaid).toLocaleString()}</p>
                 </div>
                 <div className="p-4 bg-blue-500/5 border border-blue-500/20 rounded-lg">
-                  <h3 className="text-sm font-medium text-blue-700 dark:text-blue-300">Loan Duration</h3>
-                  <p className="text-xl font-bold text-blue-700 dark:text-blue-300">{schedule.length} months</p>
+                  <h3 className="text-sm font-medium text-blue-700 dark:text-blue-300">{t('loan.tenure')}</h3>
+                  <p className="text-xl font-bold text-blue-700 dark:text-blue-300">{schedule.length} {t('summary.months')}</p>
                 </div>
               </div>
             </CardContent>
@@ -883,7 +886,7 @@ const LoanCalculator = () => {
         {/* Disclaimer */}
         <div className="text-center py-6">
           <p className="text-muted-foreground text-sm">
-            This tool is for educational purposes only. Actual loan details may vary from bank to bank.
+            {t('ui.educationalPurpose')}
           </p>
         </div>
       </div>
