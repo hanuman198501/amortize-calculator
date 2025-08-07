@@ -104,6 +104,18 @@ const translations = {
     'ui.placeholder.enterFixedEmi': 'Enter fixed EMI',
     'ui.educationalPurpose': 'This tool is for educational purposes only. Actual loan details may vary from bank to bank.',
     
+    // Calculation Mode
+    'calculation.mode': 'Calculation Mode',
+    'calculation.interestRateSchedule': 'Interest Rate Schedule',
+    'calculation.defaultExtraPayment': 'Default Extra Payment',
+    'calculation.extraPaymentsByMonth': 'Extra Payments by Month',
+    
+    // Tooltips for advanced features
+    'tooltip.interestRateSchedule': 'Define when interest rates change during the loan period',
+    'tooltip.advancedOptions': 'Configure additional payment settings and monthly extras',
+    'tooltip.defaultExtraPayment': 'Additional amount you\'ll pay each month to reduce principal',
+    'tooltip.extraPaymentsByMonth': 'Schedule additional payments for specific months',
+    
     // Language
     'language.english': 'English',
     'language.hindi': 'हिंदी',
@@ -202,6 +214,18 @@ const translations = {
     'ui.placeholder.enterInterestRate': 'वार्षिक ब्याज दर दर्ज करें',
     'ui.placeholder.enterFixedEmi': 'निश्चित ईएमआई दर्ज करें',
     'ui.educationalPurpose': 'यह उपकरण केवल शैक्षिक उद्देश्यों के लिए है। वास्तविक ऋण विवरण बैंक से बैंक में भिन्न हो सकते हैं।',
+    
+    // Calculation Mode
+    'calculation.mode': 'गणना मोड',
+    'calculation.interestRateSchedule': 'ब्याज दर अनुसूची',
+    'calculation.defaultExtraPayment': 'डिफ़ॉल्ट अतिरिक्त भुगतान',
+    'calculation.extraPaymentsByMonth': 'माह के अनुसार अतिरिक्त भुगतान',
+    
+    // Tooltips for advanced features
+    'tooltip.interestRateSchedule': 'ऋण अवधि के दौरान ब्याज दरों में बदलाव कब होगा, इसे परिभाषित करें',
+    'tooltip.advancedOptions': 'अतिरिक्त भुगतान सेटिंग्स और मासिक अतिरिक्त राशि कॉन्फ़िगर करें',
+    'tooltip.defaultExtraPayment': 'मूलधन कम करने के लिए आप हर महीने अतिरिक्त राशि का भुगतान करेंगे',
+    'tooltip.extraPaymentsByMonth': 'विशिष्ट महीनों के लिए अतिरिक्त भुगतान शेड्यूल करें',
     
     // Language
     'language.english': 'English',

@@ -422,7 +422,7 @@ const LoanCalculator = () => {
             <CardContent className="p-6 space-y-6">
               {/* Calculation Mode */}
               <div>
-                <Label className="text-lg font-semibold">Calculation Mode</Label>
+                <Label className="text-lg font-semibold">{t('calculation.mode')}</Label>
                 <div className="grid grid-cols-2 gap-2 mt-2">
                   <Button
                     onClick={() => setCalculationMode('fixed-emi')}
@@ -574,7 +574,7 @@ const LoanCalculator = () => {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <Label className="text-lg font-semibold">Interest Rate Schedule</Label>
+                    <Label className="text-lg font-semibold">{t('calculation.interestRateSchedule')}</Label>
                     <TooltipProvider>
                       <Tooltip open={tooltipStates.interestRate}>
                         <TooltipTrigger 
@@ -588,7 +588,7 @@ const LoanCalculator = () => {
                           onPointerDownOutside={() => closeTooltip('interestRate')}
                           onEscapeKeyDown={() => closeTooltip('interestRate')}
                         >
-                          <p>Define when interest rates change during the loan period</p>
+                          <p>{t('tooltip.interestRateSchedule')}</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -665,7 +665,7 @@ const LoanCalculator = () => {
                               onPointerDownOutside={() => closeTooltip('advanced')}
                               onEscapeKeyDown={() => closeTooltip('advanced')}
                             >
-                              <p>Configure additional payment settings and monthly extras</p>
+                              <p>{t('tooltip.advancedOptions')}</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -678,7 +678,7 @@ const LoanCalculator = () => {
                     {/* Default Extra Payment */}
                     <div>
                       <div className="flex items-center gap-2">
-                        <Label htmlFor="defaultExtra">Default Extra Payment (₹)</Label>
+                        <Label htmlFor="defaultExtra">{t('calculation.defaultExtraPayment')} (₹)</Label>
                         <TooltipProvider>
                           <Tooltip open={tooltipStates.defaultExtra}>
                             <TooltipTrigger 
@@ -692,7 +692,7 @@ const LoanCalculator = () => {
                               onPointerDownOutside={() => closeTooltip('defaultExtra')}
                               onEscapeKeyDown={() => closeTooltip('defaultExtra')}
                             >
-                              <p>Additional amount you'll pay each month to reduce principal</p>
+                              <p>{t('tooltip.defaultExtraPayment')}</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -712,7 +712,7 @@ const LoanCalculator = () => {
                     <div>
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
-                          <Label className="text-lg font-semibold">Extra Payments by Month</Label>
+                          <Label className="text-lg font-semibold">{t('calculation.extraPaymentsByMonth')}</Label>
                           <TooltipProvider>
                             <Tooltip open={tooltipStates.extraPayments}>
                               <TooltipTrigger 
@@ -726,7 +726,7 @@ const LoanCalculator = () => {
                                 onPointerDownOutside={() => closeTooltip('extraPayments')}
                                 onEscapeKeyDown={() => closeTooltip('extraPayments')}
                               >
-                                <p>Schedule additional payments for specific months</p>
+                                <p>{t('tooltip.extraPaymentsByMonth')}</p>
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
