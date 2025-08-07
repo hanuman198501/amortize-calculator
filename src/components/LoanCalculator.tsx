@@ -120,6 +120,7 @@ const LoanCalculator = () => {
   const [tenureMonths, setTenureMonths] = useState<string>('');
   const [startDate, setStartDate] = useState<string>('');
   const [defaultExtra, setDefaultExtra] = useState<string>('');
+  const [defaultExtraInterval, setDefaultExtraInterval] = useState<string>('1');
   const [interestRates, setInterestRates] = useState<InterestRate[]>([
     { date: '', rate: 0 }
   ]);
@@ -247,6 +248,7 @@ const LoanCalculator = () => {
     const fixedEmiNum = calculationMode === 'fixed-emi' ? parseFloat(fixedEmi) : null;
     const tenureMonthsNum = calculationMode === 'tenure' ? parseInt(tenureMonths) : null;
     const defaultExtraNum = parseFloat(defaultExtra) || 0;
+    const defaultExtraIntervalNum = parseInt(defaultExtraInterval) || 1;
 
     if (loanAmountNum <= 0) {
       toast({
@@ -311,11 +313,19 @@ const LoanCalculator = () => {
         const interest = outstanding * mrate;
         const principalFromEmi = Math.max(emi - interest, 0);
 
-        // Scheduled extra, capped
+        // Determine extra payment for this month
         const monthKey = currentDate.toISOString().slice(0, 7); // YYYY-MM format
-        const scheduledExtra = extraPaymentMap[monthKey] !== undefined ? extraPaymentMap[monthKey] : defaultExtraNum;
+        let extraPaymentThisMonth: number;
+        if (extraPaymentMap[monthKey] !== undefined) {
+          extraPaymentThisMonth = extraPaymentMap[monthKey];
+        } else {
+          // Apply default extra payment based on interval
+          extraPaymentThisMonth = (month % defaultExtraIntervalNum === 0) ? defaultExtraNum : 0;
+        }
+        
+        // Cap extra so we never overpay principal
         const maxExtra = Math.max(outstanding - principalFromEmi, 0);
-        const extra = Math.min(scheduledExtra, maxExtra);
+        const extra = Math.min(extraPaymentThisMonth, maxExtra);
 
         // Final payment logic in early payoff
         let emiPaid: number;
@@ -534,7 +544,7 @@ const LoanCalculator = () => {
                       value={tenureMonths}
                       onChange={(e) => setTenureMonths(e.target.value)}
                       className="mt-1"
-                      placeholder={t('loan.tenure')}
+                      placeholder={t('ui.placeholder.enterTenure')}
                       min="1"
                     />
                   </div>
@@ -676,36 +686,69 @@ const LoanCalculator = () => {
                   
                   <CollapsibleContent className="space-y-4 mt-4">
                     {/* Default Extra Payment */}
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <Label htmlFor="defaultExtra">{t('calculation.defaultExtraPayment')} (₹)</Label>
-                        <TooltipProvider>
-                          <Tooltip open={tooltipStates.defaultExtra}>
-                            <TooltipTrigger 
-                              onClick={() => toggleTooltip('defaultExtra')}
-                              onMouseEnter={() => setTooltipStates(prev => ({ ...prev, defaultExtra: true }))}
-                              onMouseLeave={() => setTooltipStates(prev => ({ ...prev, defaultExtra: false }))}
-                            >
-                              <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
-                            </TooltipTrigger>
-                            <TooltipContent 
-                              onPointerDownOutside={() => closeTooltip('defaultExtra')}
-                              onEscapeKeyDown={() => closeTooltip('defaultExtra')}
-                            >
-                              <p>{t('tooltip.defaultExtraPayment')}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="defaultExtra">{t('calculation.defaultExtraPayment')} (₹)</Label>
+                          <TooltipProvider>
+                            <Tooltip open={tooltipStates.defaultExtra}>
+                              <TooltipTrigger 
+                                onClick={() => toggleTooltip('defaultExtra')}
+                                onMouseEnter={() => setTooltipStates(prev => ({ ...prev, defaultExtra: true }))}
+                                onMouseLeave={() => setTooltipStates(prev => ({ ...prev, defaultExtra: false }))}
+                              >
+                                <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
+                              </TooltipTrigger>
+                              <TooltipContent 
+                                onPointerDownOutside={() => closeTooltip('defaultExtra')}
+                                onEscapeKeyDown={() => closeTooltip('defaultExtra')}
+                              >
+                                <p>{t('tooltip.defaultExtraPayment')}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <Input
+                          id="defaultExtra"
+                          type="number"
+                          value={defaultExtra}
+                          onChange={(e) => setDefaultExtra(e.target.value)}
+                          className="mt-1"
+                          placeholder="Enter default extra payment"
+                          min="0"
+                        />
                       </div>
-                      <Input
-                        id="defaultExtra"
-                        type="number"
-                        value={defaultExtra}
-                        onChange={(e) => setDefaultExtra(e.target.value)}
-                        className="mt-1"
-                        placeholder="Enter default extra payment"
-                        min="0"
-                      />
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="defaultExtraInterval">{t('calculation.defaultExtraInterval')}</Label>
+                          <TooltipProvider>
+                            <Tooltip open={tooltipStates.defaultExtraInterval}>
+                              <TooltipTrigger 
+                                onClick={() => toggleTooltip('defaultExtraInterval')}
+                                onMouseEnter={() => setTooltipStates(prev => ({ ...prev, defaultExtraInterval: true }))}
+                                onMouseLeave={() => setTooltipStates(prev => ({ ...prev, defaultExtraInterval: false }))}
+                              >
+                                <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
+                              </TooltipTrigger>
+                              <TooltipContent 
+                                onPointerDownOutside={() => closeTooltip('defaultExtraInterval')}
+                                onEscapeKeyDown={() => closeTooltip('defaultExtraInterval')}
+                              >
+                                <p>{t('tooltip.defaultExtraInterval')}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <Input
+                          id="defaultExtraInterval"
+                          type="number"
+                          value={defaultExtraInterval}
+                          onChange={(e) => setDefaultExtraInterval(e.target.value)}
+                          className="mt-1"
+                          placeholder="1"
+                          min="1"
+                        />
+                      </div>
                     </div>
 
                     {/* Extra Payments by Month */}

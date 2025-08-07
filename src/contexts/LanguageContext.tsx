@@ -17,7 +17,7 @@ const translations = {
     // Loan Parameters
     'loan.parameters': 'Loan Parameters',
     'loan.amount': 'Loan Amount (₹)',
-    'loan.tenure': 'Loan Tenure (Years)',
+    'loan.tenure': 'Fixed Tenure (months)',
     'loan.interestRate': 'Interest Rate (%)',
     'loan.startDate': 'Loan Start Date',
     'loan.calculate': 'Calculate',
@@ -26,7 +26,7 @@ const translations = {
     'emi.title': 'EMI Calculator',
     'emi.loanDetails': 'Loan Details',
     'emi.breakdown': 'EMI Breakdown',
-    'emi.monthlyEmi': 'Monthly EMI',
+    'emi.monthlyEmi': 'Fixed EMI',
     'emi.totalInterest': 'Total Interest',
     'emi.totalAmount': 'Total Amount',
     'emi.interestPortion': 'Interest Portion',
@@ -75,7 +75,7 @@ const translations = {
     
     // Tooltips
     'tooltip.loanAmount': 'Enter the total loan amount you want to borrow',
-    'tooltip.tenure': 'Enter the loan tenure in years',
+    'tooltip.tenure': 'Enter the loan tenure in months',
     'tooltip.interestRate': 'Enter the annual interest rate percentage',
     'tooltip.startDate': 'Select the loan start date',
     'tooltip.extraPayments': 'Add extra payments for specific months to reduce interest',
@@ -108,12 +108,14 @@ const translations = {
     'calculation.mode': 'Calculation Mode',
     'calculation.interestRateSchedule': 'Interest Rate Schedule',
     'calculation.defaultExtraPayment': 'Default Extra Payment',
+    'calculation.defaultExtraInterval': 'Extra Payment Interval (months)',
     'calculation.extraPaymentsByMonth': 'Extra Payments by Month',
     
     // Tooltips for advanced features
     'tooltip.interestRateSchedule': 'Define when interest rates change during the loan period',
     'tooltip.advancedOptions': 'Configure additional payment settings and monthly extras',
     'tooltip.defaultExtraPayment': 'Additional amount you\'ll pay each month to reduce principal',
+    'tooltip.defaultExtraInterval': 'How often to apply the default extra payment (e.g., 2 = every 2nd month)',
     'tooltip.extraPaymentsByMonth': 'Schedule additional payments for specific months',
     
     // Language
@@ -128,7 +130,7 @@ const translations = {
     // Loan Parameters
     'loan.parameters': 'ऋण पैरामीटर',
     'loan.amount': 'ऋण राशि (₹)',
-    'loan.tenure': 'ऋण अवधि (वर्ष)',
+    'loan.tenure': 'निश्चित अवधि (महीने)',
     'loan.interestRate': 'ब्याज दर (%)',
     'loan.startDate': 'ऋण प्रारंभ दिनांक',
     'loan.calculate': 'गणना करें',
@@ -137,7 +139,7 @@ const translations = {
     'emi.title': 'ईएमआई कैलकुलेटर',
     'emi.loanDetails': 'ऋण विवरण',
     'emi.breakdown': 'ईएमआई विभाजन',
-    'emi.monthlyEmi': 'मासिक ईएमआई',
+    'emi.monthlyEmi': 'निश्चित ईएमआई',
     'emi.totalInterest': 'कुल ब्याज',
     'emi.totalAmount': 'कुल राशि',
     'emi.interestPortion': 'ब्याज हिस्सा',
@@ -186,7 +188,7 @@ const translations = {
     
     // Tooltips
     'tooltip.loanAmount': 'कुल ऋण राशि दर्ज करें जो आप उधार लेना चाहते हैं',
-    'tooltip.tenure': 'ऋण अवधि वर्षों में दर्ज करें',
+    'tooltip.tenure': 'ऋण अवधि महीनों में दर्ज करें',
     'tooltip.interestRate': 'वार्षिक ब्याज दर प्रतिशत दर्ज करें',
     'tooltip.startDate': 'ऋण प्रारंभ दिनांक चुनें',
     'tooltip.extraPayments': 'ब्याज कम करने के लिए विशिष्ट महीनों के लिए अतिरिक्त भुगतान जोड़ें',
@@ -219,12 +221,14 @@ const translations = {
     'calculation.mode': 'गणना मोड',
     'calculation.interestRateSchedule': 'ब्याज दर अनुसूची',
     'calculation.defaultExtraPayment': 'डिफ़ॉल्ट अतिरिक्त भुगतान',
+    'calculation.defaultExtraInterval': 'अतिरिक्त भुगतान अंतराल (महीने)',
     'calculation.extraPaymentsByMonth': 'माह के अनुसार अतिरिक्त भुगतान',
     
     // Tooltips for advanced features
     'tooltip.interestRateSchedule': 'ऋण अवधि के दौरान ब्याज दरों में बदलाव कब होगा, इसे परिभाषित करें',
     'tooltip.advancedOptions': 'अतिरिक्त भुगतान सेटिंग्स और मासिक अतिरिक्त राशि कॉन्फ़िगर करें',
     'tooltip.defaultExtraPayment': 'मूलधन कम करने के लिए आप हर महीने अतिरिक्त राशि का भुगतान करेंगे',
+    'tooltip.defaultExtraInterval': 'डिफ़ॉल्ट अतिरिक्त भुगतान कितनी बार लगाना है (जैसे, 2 = हर दूसरे महीने)',
     'tooltip.extraPaymentsByMonth': 'विशिष्ट महीनों के लिए अतिरिक्त भुगतान शेड्यूल करें',
     
     // Language
