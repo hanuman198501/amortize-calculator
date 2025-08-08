@@ -129,7 +129,7 @@ const LoanCalculator = () => {
   const [schedule, setSchedule] = useState<AmortizationRow[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
-  const [tooltipStates, setTooltipStates] = useState<{ [key: string]: boolean }>({});
+  
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -182,19 +182,6 @@ const LoanCalculator = () => {
     }
   };
 
-  const toggleTooltip = (key: string) => {
-    setTooltipStates(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
-  };
-
-  const closeTooltip = (key: string) => {
-    setTooltipStates(prev => ({
-      ...prev,
-      [key]: false
-    }));
-  };
 
   const getInterestRate = (currentDate: Date, interestSchedule: InterestRate[]): number => {
     const sortedSchedule = interestSchedule
@@ -457,23 +444,14 @@ const LoanCalculator = () => {
                 <div>
                   <div className="flex items-center gap-2">
                     <Label htmlFor="loanAmount">{t('loan.amount')}</Label>
-                    <TooltipProvider>
-                      <Tooltip open={tooltipStates.loanAmount}>
-                        <TooltipTrigger 
-                          onClick={() => toggleTooltip('loanAmount')}
-                          onMouseEnter={() => setTooltipStates(prev => ({ ...prev, loanAmount: true }))}
-                          onMouseLeave={() => setTooltipStates(prev => ({ ...prev, loanAmount: false }))}
-                        >
-                          <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
-                        </TooltipTrigger>
-                        <TooltipContent 
-                          onPointerDownOutside={() => closeTooltip('loanAmount')}
-                          onEscapeKeyDown={() => closeTooltip('loanAmount')}
-                        >
-                          <p>{t('tooltip.loanAmount')}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
+                      </PopoverTrigger>
+                      <PopoverContent className="w-80">
+                        <p className="text-sm">{t('tooltip.loanAmount')}</p>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <Input
                     id="loanAmount"
@@ -489,23 +467,14 @@ const LoanCalculator = () => {
                   <div>
                     <div className="flex items-center gap-2">
                       <Label htmlFor="fixedEmi">{t('emi.monthlyEmi')} (₹)</Label>
-                      <TooltipProvider>
-                        <Tooltip open={tooltipStates.fixedEmi}>
-                          <TooltipTrigger 
-                            onClick={() => toggleTooltip('fixedEmi')}
-                            onMouseEnter={() => setTooltipStates(prev => ({ ...prev, fixedEmi: true }))}
-                            onMouseLeave={() => setTooltipStates(prev => ({ ...prev, fixedEmi: false }))}
-                          >
-                            <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
-                          </TooltipTrigger>
-                          <TooltipContent 
-                            onPointerDownOutside={() => closeTooltip('fixedEmi')}
-                            onEscapeKeyDown={() => closeTooltip('fixedEmi')}
-                          >
-                            <p>{t('tooltip.loanAmount')}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80">
+                          <p className="text-sm">{t('tooltip.fixedEmi')}</p>
+                        </PopoverContent>
+                      </Popover>
                     </div>
                     <Input
                       id="fixedEmi"
@@ -521,23 +490,14 @@ const LoanCalculator = () => {
                   <div>
                     <div className="flex items-center gap-2">
                       <Label htmlFor="tenureMonths">{t('loan.tenure')}</Label>
-                      <TooltipProvider>
-                        <Tooltip open={tooltipStates.tenureMonths}>
-                          <TooltipTrigger 
-                            onClick={() => toggleTooltip('tenureMonths')}
-                            onMouseEnter={() => setTooltipStates(prev => ({ ...prev, tenureMonths: true }))}
-                            onMouseLeave={() => setTooltipStates(prev => ({ ...prev, tenureMonths: false }))}
-                          >
-                            <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
-                          </TooltipTrigger>
-                          <TooltipContent 
-                            onPointerDownOutside={() => closeTooltip('tenureMonths')}
-                            onEscapeKeyDown={() => closeTooltip('tenureMonths')}
-                          >
-                            <p>{t('tooltip.tenure')}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80">
+                          <p className="text-sm">{t('tooltip.tenure')}</p>
+                        </PopoverContent>
+                      </Popover>
                     </div>
                     <Input
                       id="tenureMonths"
@@ -553,23 +513,14 @@ const LoanCalculator = () => {
                 <div>
                   <div className="flex items-center gap-2">
                     <Label htmlFor="startDate">{t('loan.startDate')}</Label>
-                    <TooltipProvider>
-                      <Tooltip open={tooltipStates.startDate}>
-                        <TooltipTrigger 
-                          onClick={() => toggleTooltip('startDate')}
-                          onMouseEnter={() => setTooltipStates(prev => ({ ...prev, startDate: true }))}
-                          onMouseLeave={() => setTooltipStates(prev => ({ ...prev, startDate: false }))}
-                        >
-                          <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
-                        </TooltipTrigger>
-                        <TooltipContent 
-                          onPointerDownOutside={() => closeTooltip('startDate')}
-                          onEscapeKeyDown={() => closeTooltip('startDate')}
-                        >
-                          <p>{t('tooltip.startDate')}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
+                      </PopoverTrigger>
+                      <PopoverContent className="w-80">
+                        <p className="text-sm">{t('tooltip.startDate')}</p>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <Input
                     id="startDate"
