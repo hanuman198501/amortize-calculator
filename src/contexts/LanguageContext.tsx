@@ -112,7 +112,7 @@ const translations = {
     'calculation.extraPaymentsByMonth': 'Extra Payments by Month',
     
     // Tooltips for advanced features
-    'tooltip.interestRateSchedule': 'Define when interest rates change during the loan period',
+    'tooltip.interestRateSchedule': 'Set when the interest rate starts or changes during the loan. You can add multiple rates with start dates — the latest will apply until the end.',
     'tooltip.advancedOptions': 'Configure additional payment settings and monthly extras',
     'tooltip.defaultExtraPayment': 'Additional amount you\'ll pay each month to reduce principal',
     'tooltip.defaultExtraInterval': 'How often to apply the default extra payment (e.g., 2 = every 2nd month)',
@@ -225,7 +225,7 @@ const translations = {
     'calculation.extraPaymentsByMonth': 'माह के अनुसार अतिरिक्त भुगतान',
     
     // Tooltips for advanced features
-    'tooltip.interestRateSchedule': 'ऋण अवधि के दौरान ब्याज दरों में बदलाव कब होगा, इसे परिभाषित करें',
+    'tooltip.interestRateSchedule': 'ऋण अवधि के दौरान ब्याज दर कब शुरू या बदलती है, यह निर्धारित करें। आप प्रारंभ तिथि के साथ कई ब्याज दरें जोड़ सकते हैं — अंतिम दर अंत तक लागू रहेगी।',
     'tooltip.advancedOptions': 'अतिरिक्त भुगतान सेटिंग्स और मासिक अतिरिक्त राशि कॉन्फ़िगर करें',
     'tooltip.defaultExtraPayment': 'मूलधन कम करने के लिए आप हर महीने अतिरिक्त राशि का भुगतान करेंगे',
     'tooltip.defaultExtraInterval': 'डिफ़ॉल्ट अतिरिक्त भुगतान कितनी बार लगाना है (जैसे, 2 = हर दूसरे महीने)',

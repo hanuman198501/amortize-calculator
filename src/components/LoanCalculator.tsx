@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Calculator, Plus, Trash2, GripVertical, Info, ChevronDown } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import LoanCharts from './LoanCharts';
@@ -585,23 +586,14 @@ const LoanCalculator = () => {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <Label className="text-lg font-semibold">{t('calculation.interestRateSchedule')}</Label>
-                    <TooltipProvider>
-                      <Tooltip open={tooltipStates.interestRate}>
-                        <TooltipTrigger 
-                          onClick={() => toggleTooltip('interestRate')}
-                          onMouseEnter={() => setTooltipStates(prev => ({ ...prev, interestRate: true }))}
-                          onMouseLeave={() => setTooltipStates(prev => ({ ...prev, interestRate: false }))}
-                        >
-                          <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
-                        </TooltipTrigger>
-                        <TooltipContent 
-                          onPointerDownOutside={() => closeTooltip('interestRate')}
-                          onEscapeKeyDown={() => closeTooltip('interestRate')}
-                        >
-                          <p>{t('tooltip.interestRateSchedule')}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
+                      </PopoverTrigger>
+                      <PopoverContent className="w-80">
+                        <p className="text-sm">{t('tooltip.interestRateSchedule')}</p>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <Button
                     onClick={addInterestRate}
@@ -659,26 +651,14 @@ const LoanCalculator = () => {
                     <Button variant="ghost" className="w-full justify-between p-0 h-auto">
                       <div className="flex items-center gap-2">
                         <Label className="text-lg font-semibold cursor-pointer">{t('amortization.advancedOptions')}</Label>
-                        <TooltipProvider>
-                          <Tooltip open={tooltipStates.advanced}>
-                            <TooltipTrigger 
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleTooltip('advanced');
-                              }}
-                              onMouseEnter={() => setTooltipStates(prev => ({ ...prev, advanced: true }))}
-                              onMouseLeave={() => setTooltipStates(prev => ({ ...prev, advanced: false }))}
-                            >
-                              <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
-                            </TooltipTrigger>
-                            <TooltipContent 
-                              onPointerDownOutside={() => closeTooltip('advanced')}
-                              onEscapeKeyDown={() => closeTooltip('advanced')}
-                            >
-                              <p>{t('tooltip.advancedOptions')}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
+                          </PopoverTrigger>
+                          <PopoverContent className="w-80">
+                            <p className="text-sm">{t('tooltip.advancedOptions')}</p>
+                          </PopoverContent>
+                        </Popover>
                       </div>
                       <ChevronDown className={`w-4 h-4 transition-transform ${showAdvancedOptions ? 'rotate-180' : ''}`} />
                     </Button>
@@ -690,23 +670,14 @@ const LoanCalculator = () => {
                       <div>
                         <div className="flex items-center gap-2">
                           <Label htmlFor="defaultExtra">{t('calculation.defaultExtraPayment')} (₹)</Label>
-                          <TooltipProvider>
-                            <Tooltip open={tooltipStates.defaultExtra}>
-                              <TooltipTrigger 
-                                onClick={() => toggleTooltip('defaultExtra')}
-                                onMouseEnter={() => setTooltipStates(prev => ({ ...prev, defaultExtra: true }))}
-                                onMouseLeave={() => setTooltipStates(prev => ({ ...prev, defaultExtra: false }))}
-                              >
-                                <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
-                              </TooltipTrigger>
-                              <TooltipContent 
-                                onPointerDownOutside={() => closeTooltip('defaultExtra')}
-                                onEscapeKeyDown={() => closeTooltip('defaultExtra')}
-                              >
-                                <p>{t('tooltip.defaultExtraPayment')}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
+                            </PopoverTrigger>
+                            <PopoverContent className="w-80">
+                              <p className="text-sm">{t('tooltip.defaultExtraPayment')}</p>
+                            </PopoverContent>
+                          </Popover>
                         </div>
                         <Input
                           id="defaultExtra"
@@ -721,23 +692,14 @@ const LoanCalculator = () => {
                       <div>
                         <div className="flex items-center gap-2">
                           <Label htmlFor="defaultExtraInterval">{t('calculation.defaultExtraInterval')}</Label>
-                          <TooltipProvider>
-                            <Tooltip open={tooltipStates.defaultExtraInterval}>
-                              <TooltipTrigger 
-                                onClick={() => toggleTooltip('defaultExtraInterval')}
-                                onMouseEnter={() => setTooltipStates(prev => ({ ...prev, defaultExtraInterval: true }))}
-                                onMouseLeave={() => setTooltipStates(prev => ({ ...prev, defaultExtraInterval: false }))}
-                              >
-                                <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
-                              </TooltipTrigger>
-                              <TooltipContent 
-                                onPointerDownOutside={() => closeTooltip('defaultExtraInterval')}
-                                onEscapeKeyDown={() => closeTooltip('defaultExtraInterval')}
-                              >
-                                <p>{t('tooltip.defaultExtraInterval')}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
+                            </PopoverTrigger>
+                            <PopoverContent className="w-80">
+                              <p className="text-sm">{t('tooltip.defaultExtraInterval')}</p>
+                            </PopoverContent>
+                          </Popover>
                         </div>
                         <Input
                           id="defaultExtraInterval"
@@ -756,23 +718,14 @@ const LoanCalculator = () => {
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
                           <Label className="text-lg font-semibold">{t('calculation.extraPaymentsByMonth')}</Label>
-                          <TooltipProvider>
-                            <Tooltip open={tooltipStates.extraPayments}>
-                              <TooltipTrigger 
-                                onClick={() => toggleTooltip('extraPayments')}
-                                onMouseEnter={() => setTooltipStates(prev => ({ ...prev, extraPayments: true }))}
-                                onMouseLeave={() => setTooltipStates(prev => ({ ...prev, extraPayments: false }))}
-                              >
-                                <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
-                              </TooltipTrigger>
-                              <TooltipContent 
-                                onPointerDownOutside={() => closeTooltip('extraPayments')}
-                                onEscapeKeyDown={() => closeTooltip('extraPayments')}
-                              >
-                                <p>{t('tooltip.extraPaymentsByMonth')}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
+                            </PopoverTrigger>
+                            <PopoverContent className="w-80">
+                              <p className="text-sm">{t('tooltip.extraPaymentsByMonth')}</p>
+                            </PopoverContent>
+                          </Popover>
                         </div>
                         <Button
                           onClick={addExtraPayment}
