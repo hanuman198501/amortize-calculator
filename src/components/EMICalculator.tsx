@@ -85,14 +85,14 @@ const EMICalculator = () => {
 
         {/* Centered Input Form */}
         <div className="flex justify-center">
-          <Card className="shadow-strong w-full max-w-2xl">
+          <Card className="shadow-strong w-full max-w-2xl mx-4 sm:mx-0">
             <CardHeader className="bg-gradient-primary text-white">
               <CardTitle className="flex items-center gap-2">
                 <Calculator className="w-6 h-6" />
                 {t('emi.loanDetails')}
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-6 space-y-6">
+            <CardContent className="p-4 sm:p-6 space-y-6">
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="principal">{t('loan.amount')}</Label>
@@ -102,7 +102,7 @@ const EMICalculator = () => {
                     value={principal}
                     onChange={(e) => setPrincipal(e.target.value)}
                     placeholder={t('loan.amount')}
-                    className="mt-1"
+                    className="mt-1 text-base"
                     min="0"
                   />
                 </div>
@@ -115,7 +115,7 @@ const EMICalculator = () => {
                     value={annualRate}
                     onChange={(e) => setAnnualRate(e.target.value)}
                     placeholder={t('loan.interestRate')}
-                    className="mt-1"
+                    className="mt-1 text-base"
                     min="0"
                   />
                 </div>
@@ -127,7 +127,7 @@ const EMICalculator = () => {
                     value={tenureMonths}
                     onChange={(e) => setTenureMonths(e.target.value)}
                     placeholder={t('loan.tenure')}
-                    className="mt-1"
+                    className="mt-1 text-base"
                     min="1"
                   />
                 </div>
@@ -136,7 +136,7 @@ const EMICalculator = () => {
               <Button 
                 onClick={handleCalculate}
                 disabled={isCalculating}
-                className="w-full bg-gradient-primary hover:opacity-90"
+                className="w-full bg-gradient-primary hover:opacity-90 py-3 text-base font-semibold"
               >
                 {isCalculating ? t('loan.calculate') : t('loan.calculate')}
               </Button>
@@ -147,14 +147,14 @@ const EMICalculator = () => {
         {/* Results - Below the form */}
         {emi !== null && (
           <div className="flex justify-center">
-            <Card className="shadow-strong w-full max-w-2xl">
+            <Card className="shadow-strong w-full max-w-2xl mx-4 sm:mx-0">
               <CardHeader className="bg-gradient-secondary text-white">
                 <CardTitle>{t('emi.breakdown')}</CardTitle>
               </CardHeader>
-              <CardContent className="p-6">
+              <CardContent className="p-4 sm:p-6">
                 <div className="space-y-4">
                   <div className="text-center p-6 bg-primary text-primary-foreground rounded-lg">
-                    <div className="text-3xl font-bold">
+                    <div className="text-2xl sm:text-3xl font-bold">
                       ₹{emi.toLocaleString()}
                     </div>
                     <div className="text-sm opacity-90">{t('emi.monthlyEmi')}</div>
@@ -162,13 +162,13 @@ const EMICalculator = () => {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="text-center p-4 bg-muted rounded-lg">
-                      <div className="text-2xl font-bold text-foreground">
+                      <div className="text-xl sm:text-2xl font-bold text-foreground">
                         ₹{totalPayment.toLocaleString()}
                       </div>
                       <div className="text-sm text-muted-foreground">{t('emi.totalAmount')}</div>
                     </div>
                     <div className="text-center p-4 bg-muted rounded-lg">
-                      <div className="text-2xl font-bold text-destructive">
+                      <div className="text-xl sm:text-2xl font-bold text-destructive">
                         ₹{Math.round(totalInterest).toLocaleString()}
                       </div>
                       <div className="text-sm text-muted-foreground">{t('emi.totalInterest')}</div>

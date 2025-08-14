@@ -75,36 +75,38 @@ const SortableExtraPaymentItem = ({ payment, index, onUpdate, onRemove }: {
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="flex gap-2 items-center bg-card p-2 rounded border">
+    <div ref={setNodeRef} style={style} className="flex flex-col sm:flex-row gap-2 items-start sm:items-center bg-card p-3 rounded border">
       <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
         <GripVertical className="w-4 h-4 text-muted-foreground" />
       </div>
-      <Input
-        type="month"
-        value={payment.month}
-        onChange={(e) => onUpdate(index, 'month', e.target.value)}
-        className="flex-1"
-        placeholder={t('table.month')}
-      />
-      <div className="flex items-center gap-1">
-        <span className="text-sm text-muted-foreground">₹</span>
+      <div className="flex flex-col sm:flex-row gap-2 flex-1 w-full">
         <Input
-          type="number"
-          value={payment.amount === 0 ? '' : payment.amount}
-          onChange={(e) => {
-            const value = e.target.value === '' ? 0 : Math.max(0, Number(e.target.value));
-            onUpdate(index, 'amount', value);
-          }}
-          className="w-24"
-          placeholder="0"
-          min="0"
+          type="month"
+          value={payment.month}
+          onChange={(e) => onUpdate(index, 'month', e.target.value)}
+          className="flex-1 min-w-0"
+          placeholder={t('table.month')}
         />
+        <div className="flex items-center gap-1">
+          <span className="text-sm text-muted-foreground">₹</span>
+          <Input
+            type="number"
+            value={payment.amount === 0 ? '' : payment.amount}
+            onChange={(e) => {
+              const value = e.target.value === '' ? 0 : Math.max(0, Number(e.target.value));
+              onUpdate(index, 'amount', value);
+            }}
+            className="w-24 sm:w-28"
+            placeholder="0"
+            min="0"
+          />
+        </div>
       </div>
       <Button
         onClick={() => onRemove(index)}
         size="sm"
         variant="outline"
-        className="px-2"
+        className="px-2 self-start sm:self-center"
       >
         <Trash2 className="w-4 h-4" />
       </Button>
@@ -410,29 +412,29 @@ const LoanCalculator = () => {
 
         {/* Centered and wider Loan Parameters */}
         <div className="flex justify-center">
-          <Card className="shadow-strong w-full max-w-4xl">
+          <Card className="shadow-strong w-full max-w-4xl mx-4 sm:mx-0">
             <CardHeader className="bg-gradient-primary text-white">
               <CardTitle className="flex items-center gap-2">
                 <Calculator className="w-6 h-6" />
                 {t('loan.parameters')}
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-6 space-y-6">
+            <CardContent className="p-4 sm:p-6 space-y-6">
               {/* Calculation Mode */}
               <div>
                 <Label className="text-lg font-semibold">{t('calculation.mode')}</Label>
-                <div className="grid grid-cols-2 gap-2 mt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
                   <Button
                     onClick={() => setCalculationMode('fixed-emi')}
                     variant={calculationMode === 'fixed-emi' ? 'default' : 'outline'}
-                    className="w-full"
+                    className="w-full py-3 text-sm sm:text-base"
                   >
                     {t('emi.monthlyEmi')}
                   </Button>
                   <Button
                     onClick={() => setCalculationMode('tenure')}
                     variant={calculationMode === 'tenure' ? 'default' : 'outline'}
-                    className="w-full"
+                    className="w-full py-3 text-sm sm:text-base"
                   >
                     {t('loan.tenure')}
                   </Button>
@@ -440,7 +442,7 @@ const LoanCalculator = () => {
               </div>
 
               {/* Basic Loan Info */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <div className="flex items-center gap-2">
                     <Label htmlFor="loanAmount">{t('loan.amount')}</Label>
@@ -558,12 +560,12 @@ const LoanCalculator = () => {
                 </div>
                 <div className="space-y-2 max-h-48 overflow-y-auto">
                   {interestRates.map((rate, index) => (
-                    <div key={index} className="flex gap-2 items-center">
+                    <div key={index} className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
                       <Input
                         type="date"
                         value={rate.date}
                         onChange={(e) => updateInterestRate(index, 'date', e.target.value)}
-                        className="flex-1"
+                        className="flex-1 w-full"
                       />
                       <div className="flex items-center gap-1">
                         <Input
@@ -574,7 +576,7 @@ const LoanCalculator = () => {
                             const value = e.target.value === '' ? 0 : Math.max(0, Number(e.target.value));
                             updateInterestRate(index, 'rate', value);
                           }}
-                          className="w-20"
+                          className="w-20 sm:w-24"
                           placeholder="0"
                           min="0"
                         />
@@ -585,7 +587,7 @@ const LoanCalculator = () => {
                           onClick={() => removeInterestRate(index)}
                           size="sm"
                           variant="outline"
-                          className="px-2"
+                          className="px-2 self-start sm:self-center"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -617,7 +619,7 @@ const LoanCalculator = () => {
                   
                   <CollapsibleContent className="space-y-4 mt-4">
                     {/* Default Extra Payment */}
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <div className="flex items-center gap-2">
                           <Label htmlFor="defaultExtra">{t('calculation.defaultExtraPayment')} (₹)</Label>
@@ -715,7 +717,7 @@ const LoanCalculator = () => {
               <Button 
                 onClick={calculateAmortization}
                 disabled={isCalculating}
-                className="w-full bg-gradient-primary hover:opacity-90"
+                className="w-full bg-gradient-primary hover:opacity-90 py-3 text-base font-semibold"
               >
                 {isCalculating ? t('ui.calculating') : t('loan.calculate')}
               </Button>
@@ -725,60 +727,60 @@ const LoanCalculator = () => {
 
         {/* Amortization Schedule Table */}
         {schedule.length > 0 && (
-          <Card className="shadow-strong animate-fade-in">
+          <Card className="shadow-strong animate-fade-in mx-4 sm:mx-0">
             <CardHeader>
               <CardTitle>{t('amortization.schedule')}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto -mx-4 sm:mx-0">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b bg-muted/50">
-                      <th className="text-left p-3 font-semibold">{t('table.month')}</th>
-                      <th className="text-left p-3 font-semibold">{t('table.date')}</th>
-                      <th className="text-left p-3 font-semibold">{t('table.rate')}</th>
-                      <th className="text-right p-3 font-semibold">{t('table.openingBalance')}</th>
-                      <th className="text-right p-3 font-semibold">{t('table.emi')}</th>
-                      <th className="text-right p-3 font-semibold">{t('table.extraPayment')}</th>
-                      <th className="text-right p-3 font-semibold">{t('table.totalPayment')}</th>
-                      <th className="text-right p-3 font-semibold">{t('table.interestPaid')}</th>
-                      <th className="text-right p-3 font-semibold">{t('table.principalPaid')}</th>
-                      <th className="text-right p-3 font-semibold">{t('table.remainingBalance')}</th>
+                      <th className="text-left p-2 sm:p-3 font-semibold min-w-[60px]">{t('table.month')}</th>
+                      <th className="text-left p-2 sm:p-3 font-semibold min-w-[100px]">{t('table.date')}</th>
+                      <th className="text-left p-2 sm:p-3 font-semibold min-w-[80px]">{t('table.rate')}</th>
+                      <th className="text-right p-2 sm:p-3 font-semibold min-w-[120px]">{t('table.openingBalance')}</th>
+                      <th className="text-right p-2 sm:p-3 font-semibold min-w-[100px]">{t('table.emi')}</th>
+                      <th className="text-right p-2 sm:p-3 font-semibold min-w-[100px]">{t('table.extraPayment')}</th>
+                      <th className="text-right p-2 sm:p-3 font-semibold min-w-[120px]">{t('table.totalPayment')}</th>
+                      <th className="text-right p-2 sm:p-3 font-semibold min-w-[100px]">{t('table.interestPaid')}</th>
+                      <th className="text-right p-2 sm:p-3 font-semibold min-w-[100px]">{t('table.principalPaid')}</th>
+                      <th className="text-right p-2 sm:p-3 font-semibold min-w-[120px]">{t('table.remainingBalance')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {schedule.map((row, index) => (
                       <tr key={row.month} className={`border-b hover:bg-muted/20 ${index % 2 === 0 ? 'bg-background' : 'bg-muted/10'}`}>
-                        <td className="p-3 font-medium">{row.month}</td>
-                        <td className="p-3">{new Date(row.paymentDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
-                        <td className="p-3">
+                        <td className="p-2 sm:p-3 font-medium">{row.month}</td>
+                        <td className="p-2 sm:p-3 text-xs sm:text-sm">{new Date(row.paymentDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                        <td className="p-2 sm:p-3">
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
                             {row.annualInterestRate.toFixed(2)}%
                           </span>
                         </td>
-                        <td className="p-3 text-right">₹{row.openingBalance.toLocaleString()}</td>
-                        <td className="p-3 text-right">₹{row.monthlyEmi.toLocaleString()}</td>
-                        <td className="p-3 text-right">
+                        <td className="p-2 sm:p-3 text-right text-xs sm:text-sm">₹{row.openingBalance.toLocaleString()}</td>
+                        <td className="p-2 sm:p-3 text-right text-xs sm:text-sm">₹{row.monthlyEmi.toLocaleString()}</td>
+                        <td className="p-2 sm:p-3 text-right">
                           {row.extraPayment > 0 ? (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300">
                               ₹{row.extraPayment.toLocaleString()}
                             </span>
                           ) : (
-                            "₹0"
+                            <span className="text-xs sm:text-sm">₹0</span>
                           )}
                         </td>
-                        <td className="p-3 text-right font-medium">₹{row.totalPaymentThisMonth.toLocaleString()}</td>
-                        <td className="p-3 text-right">
+                        <td className="p-2 sm:p-3 text-right font-medium text-xs sm:text-sm">₹{row.totalPaymentThisMonth.toLocaleString()}</td>
+                        <td className="p-2 sm:p-3 text-right">
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
                             ₹{row.interestPaid.toLocaleString()}
                           </span>
                         </td>
-                        <td className="p-3 text-right">
+                        <td className="p-2 sm:p-3 text-right">
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
                             ₹{row.principalPaid.toLocaleString()}
                           </span>
                         </td>
-                        <td className="p-3 text-right font-medium">₹{row.remainingBalance.toLocaleString()}</td>
+                        <td className="p-2 sm:p-3 text-right font-medium text-xs sm:text-sm">₹{row.remainingBalance.toLocaleString()}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -790,35 +792,35 @@ const LoanCalculator = () => {
 
         {/* Loan Summary */}
         {schedule.length > 0 && (
-          <Card className="shadow-strong">
+          <Card className="shadow-strong mx-4 sm:mx-0">
             <CardHeader className="bg-gradient-secondary text-white">
               <CardTitle>{t('amortization.summary')}</CardTitle>
             </CardHeader>
-            <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <CardContent className="p-4 sm:p-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
                   <h3 className="text-sm font-medium text-primary">{t('loan.amount')}</h3>
-                  <p className="text-xl font-bold text-primary">₹{parseFloat(loanAmount || '0').toLocaleString()}</p>
+                  <p className="text-lg sm:text-xl font-bold text-primary">₹{parseFloat(loanAmount || '0').toLocaleString()}</p>
                 </div>
                 <div className="p-4 bg-destructive/5 border border-destructive/20 rounded-lg">
                   <h3 className="text-sm font-medium text-destructive">{t('summary.totalInterest')}</h3>
-                  <p className="text-xl font-bold text-destructive">₹{Math.round(totalInterest).toLocaleString()}</p>
+                  <p className="text-lg sm:text-xl font-bold text-destructive">₹{Math.round(totalInterest).toLocaleString()}</p>
                 </div>
                 <div className="p-4 bg-purple-500/5 border border-purple-500/20 rounded-lg">
                   <h3 className="text-sm font-medium text-purple-700 dark:text-purple-300">{t('summary.totalExtraPayments')}</h3>
-                  <p className="text-xl font-bold text-purple-700 dark:text-purple-300">₹{Math.round(totalExtra).toLocaleString()}</p>
+                  <p className="text-lg sm:text-xl font-bold text-purple-700 dark:text-purple-300">₹{Math.round(totalExtra).toLocaleString()}</p>
                 </div>
                 <div className="p-4 bg-green-500/5 border border-green-500/20 rounded-lg">
                   <h3 className="text-sm font-medium text-green-700 dark:text-green-300">{t('emi.monthlyEmi')}</h3>
-                  <p className="text-xl font-bold text-green-700 dark:text-green-300">₹{Math.round(totalEmiPayments).toLocaleString()}</p>
+                  <p className="text-lg sm:text-xl font-bold text-green-700 dark:text-green-300">₹{Math.round(totalEmiPayments).toLocaleString()}</p>
                 </div>
                 <div className="p-4 bg-muted border rounded-lg">
                   <h3 className="text-sm font-medium text-muted-foreground">{t('summary.totalAmount')}</h3>
-                  <p className="text-xl font-bold text-foreground">₹{Math.round(totalPaid).toLocaleString()}</p>
+                  <p className="text-lg sm:text-xl font-bold text-foreground">₹{Math.round(totalPaid).toLocaleString()}</p>
                 </div>
                 <div className="p-4 bg-blue-500/5 border border-blue-500/20 rounded-lg">
                   <h3 className="text-sm font-medium text-blue-700 dark:text-blue-300">{t('loan.tenure')}</h3>
-                  <p className="text-xl font-bold text-blue-700 dark:text-blue-300">{schedule.length} {t('summary.months')}</p>
+                  <p className="text-lg sm:text-xl font-bold text-blue-700 dark:text-blue-300">{schedule.length} {t('summary.months')}</p>
                 </div>
               </div>
             </CardContent>

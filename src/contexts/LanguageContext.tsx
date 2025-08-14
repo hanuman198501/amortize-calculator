@@ -117,6 +117,7 @@ const translations = {
     'tooltip.defaultExtraPayment': 'Additional amount you\'ll pay each month to reduce principal',
     'tooltip.defaultExtraInterval': 'How often to apply the default extra payment (e.g., 2 = every 2nd month)',
     'tooltip.extraPaymentsByMonth': 'Schedule additional payments for specific months',
+    'tooltip.fixedEmi': 'Enter your fixed monthly payment',
     
     // Language
     'language.english': 'English',
@@ -230,6 +231,7 @@ const translations = {
     'tooltip.defaultExtraPayment': 'मूलधन कम करने के लिए आप हर महीने अतिरिक्त राशि का भुगतान करेंगे',
     'tooltip.defaultExtraInterval': 'डिफ़ॉल्ट अतिरिक्त भुगतान कितनी बार लगाना है (जैसे, 2 = हर दूसरे महीने)',
     'tooltip.extraPaymentsByMonth': 'विशिष्ट महीनों के लिए अतिरिक्त भुगतान शेड्यूल करें',
+    'tooltip.fixedEmi': 'अपनी तय मासिक किस्त दर्ज करें',
     
     // Language
     'language.english': 'English',
