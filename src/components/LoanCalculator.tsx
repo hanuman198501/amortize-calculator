@@ -369,9 +369,17 @@ const LoanCalculator = () => {
         const monthNum = currentDate.getMonth();
         const day = currentDate.getDate();
         
-        // Get the last day of current month, then add days to get to next month
-        const lastDay = new Date(year, monthNum + 1, 0).getDate();
-        currentDate = new Date(year, monthNum + 1, day);
+        // Move to the same day next month, handling month-end edge cases properly
+        const nextMonth = new Date(year, monthNum + 1, day);
+        
+        // If the day doesn't exist in the next month (e.g., Jan 31 -> Feb 31), 
+        // use the last day of that month
+        if (nextMonth.getMonth() !== (monthNum + 1) % 12) {
+          // Day doesn't exist in next month, use last day of next month
+          currentDate = new Date(year, monthNum + 2, 0);
+        } else {
+          currentDate = nextMonth;
+        }
         
         month++;
       }
