@@ -370,16 +370,20 @@ const LoanCalculator = () => {
         const day = currentDate.getDate();
         
         // Move to the same day next month, handling month-end edge cases properly
-        const nextMonth = new Date(year, monthNum + 1, day);
+        let nextYear = year;
+        let nextMonthNum = monthNum + 1;
         
-        // If the day doesn't exist in the next month (e.g., Jan 31 -> Feb 31), 
-        // use the last day of that month
-        if (nextMonth.getMonth() !== (monthNum + 1) % 12) {
-          // Day doesn't exist in next month, use last day of next month
-          currentDate = new Date(year, monthNum + 2, 0);
-        } else {
-          currentDate = nextMonth;
+        // Handle year rollover
+        if (nextMonthNum > 11) {
+          nextYear = year + 1;
+          nextMonthNum = 0;
         }
+        
+        // Try to create date with same day in next month
+        const daysInNextMonth = new Date(nextYear, nextMonthNum + 1, 0).getDate();
+        const targetDay = Math.min(day, daysInNextMonth);
+        
+        currentDate = new Date(nextYear, nextMonthNum, targetDay);
         
         month++;
       }
