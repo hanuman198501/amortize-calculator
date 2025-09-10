@@ -533,6 +533,7 @@ const LoanCalculator = () => {
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
                     className="mt-1"
+                    placeholder="dd/mm/yyyy"
                   />
                 </div>
               </div>
@@ -569,6 +570,7 @@ const LoanCalculator = () => {
                         value={rate.date}
                         onChange={(e) => updateInterestRate(index, 'date', e.target.value)}
                         className="flex-1 w-full"
+                        placeholder="dd/mm/yyyy"
                       />
                       <div className="flex items-center gap-1">
                         <Input
@@ -755,7 +757,7 @@ const LoanCalculator = () => {
                     {schedule.map((row, index) => (
                       <tr key={row.month} className={`border-b hover:bg-muted/20 ${index % 2 === 0 ? 'bg-background' : 'bg-muted/10'}`}>
                         <td className="p-2 sm:p-3 font-medium">{row.month}</td>
-                        <td className="p-2 sm:p-3 text-xs sm:text-sm">{new Date(row.paymentDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                        <td className="p-2 sm:p-3 text-xs sm:text-sm">{new Date(row.paymentDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                         <td className="p-2 sm:p-3">
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
                             {row.annualInterestRate.toFixed(2)}%
