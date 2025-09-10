@@ -217,7 +217,6 @@ const translations = {
     'ui.placeholder.enterInterestRate': 'वार्षिक ब्याज दर दर्ज करें',
     'ui.placeholder.enterFixedEmi': 'निश्चित ईएमआई दर्ज करें',
     'ui.educationalPurpose': 'यह उपकरण केवल शैक्षिक उद्देश्यों के लिए है। वास्तविक ऋण विवरण बैंक से बैंक में भिन्न हो सकते हैं।',
-    'ui.selectDate': 'दिनांक चुनें',
     
     // Calculation Mode
     'calculation.mode': 'गणना मोड',

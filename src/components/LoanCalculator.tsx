@@ -5,13 +5,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Calculator, Plus, Trash2, GripVertical, Info, ChevronDown, CalendarIcon } from 'lucide-react';
+import { Calculator, Plus, Trash2, GripVertical, Info, ChevronDown } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Calendar } from '@/components/ui/calendar';
-import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
 import LoanCharts from './LoanCharts';
 import {
   DndContext,
@@ -530,33 +527,14 @@ const LoanCalculator = () => {
                       </PopoverContent>
                     </Popover>
                   </div>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal mt-1",
-                          !startDate && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {startDate ? format(new Date(startDate), "dd/MM/yyyy") : <span>{t('ui.selectDate')}</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={startDate ? new Date(startDate) : undefined}
-                        onSelect={(date) => {
-                          if (date) {
-                            setStartDate(format(date, "yyyy-MM-dd"));
-                          }
-                        }}
-                        initialFocus
-                        className="p-3 pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <Input
+                    id="startDate"
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="mt-1"
+                    placeholder="dd/mm/yyyy"
+                  />
                 </div>
               </div>
 
@@ -587,33 +565,13 @@ const LoanCalculator = () => {
                 <div className="space-y-2 max-h-48 overflow-y-auto">
                   {interestRates.map((rate, index) => (
                     <div key={index} className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "flex-1 w-full justify-start text-left font-normal",
-                              !rate.date && "text-muted-foreground"
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {rate.date ? format(new Date(rate.date), "dd/MM/yyyy") : <span>{t('ui.selectDate')}</span>}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={rate.date ? new Date(rate.date) : undefined}
-                            onSelect={(date) => {
-                              if (date) {
-                                updateInterestRate(index, 'date', format(date, "yyyy-MM-dd"));
-                              }
-                            }}
-                            initialFocus
-                            className="p-3 pointer-events-auto"
-                          />
-                        </PopoverContent>
-                      </Popover>
+                      <Input
+                        type="date"
+                        value={rate.date}
+                        onChange={(e) => updateInterestRate(index, 'date', e.target.value)}
+                        className="flex-1 w-full"
+                        placeholder="dd/mm/yyyy"
+                      />
                       <div className="flex items-center gap-1">
                         <Input
                           type="number"
