@@ -105,14 +105,14 @@ const LoanCharts: React.FC<LoanChartsProps> = ({ schedule, loanAmount }) => {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Payment Breakdown Pie Chart */}
       <Card className="shadow-strong">
-        <CardHeader className="relative">
-          <CardTitle>{t('charts.paymentBreakdown')}</CardTitle>
-          {/* Legend in top-right */}
-          <div className="absolute top-4 right-4 flex flex-col space-y-1 text-xs">
+        <CardHeader className="relative pb-2 sm:pb-6">
+          <CardTitle className="pr-16 sm:pr-0">{t('charts.paymentBreakdown')}</CardTitle>
+          {/* Legend positioned below title on mobile, top-right on desktop */}
+          <div className="sm:absolute sm:top-4 sm:right-4 flex flex-col sm:space-y-1 space-y-2 sm:text-xs text-sm mt-3 sm:mt-0">
             {pieData.map((entry, index) => (
               <div key={index} className="flex items-center space-x-2">
                 <div 
-                  className="w-3 h-3 rounded-sm" 
+                  className="w-3 h-3 rounded-sm flex-shrink-0" 
                   style={{ backgroundColor: entry.color }}
                 />
                 <span className="text-muted-foreground">{entry.name}</span>
